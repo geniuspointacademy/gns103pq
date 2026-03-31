@@ -1,0 +1,2462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GNS 103 PREP by GPA - Engineered by O'yemi</title>
+    <style>
+        :root {
+            --primary-color: #004aad;
+            --secondary-color: #007bff;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #fff;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Screens */
+        #welcome-screen, #result-screen {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #test-screen {
+            display: none;
+            padding-bottom: 50px;
+        }
+
+        /* Typography */
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        /* Top Bar & Timer */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+            margin-bottom: 20px;
+        }
+
+        .top-bar h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        #timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .time-warning {
+            color: #ffcccc !important;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        /* Question Cards */
+        .question-card {
+            background: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .question-number {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.05rem;
+        }
+
+        .option-label:hover {
+            background: #e9ecef;
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
+        .option-label.selected {
+            background: #e7f1ff;
+            border-color: var(--secondary-color);
+        }
+
+        .option-label.correct {
+            background: #d4edda !important;
+            border-color: var(--success) !important;
+            color: #155724;
+            font-weight: bold;
+        }
+
+        .option-label.wrong {
+            background: #f8d7da !important;
+            border-color: var(--danger) !important;
+            color: #721c24;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            font-size: 1.3rem;
+            padding: 15px;
+            margin-top: 30px;
+            background: var(--success);
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+        }
+
+        /* Loading Spinner */
+        #loader {
+            display: none;
+            margin-top: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .top-bar { flex-direction: column; gap: 10px; text-align: center; }
+            .question-card { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="welcome-screen">
+            <h1>GNS 103 PREP by GPA</h1>
+            <p class="subtitle">Engineered by O'yemi</p>
+            <hr style="border:1px solid #eee; margin:20px 0;">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: left; margin-bottom: 30px;">
+                <p><strong>📝 Format:</strong> 60 Questions (Shuffled randomly from bank)</p>
+                <p><strong>⏱️ Time Limit:</strong> 10 Minutes</p>
+                <p><strong>🔁 Attempts:</strong> Unlimited</p>
+            </div>
+            <button class="btn" onclick="startTest()">Start CBT Now</button>
+            <div id="loader">Processing Question Bank...</div>
+        </div>
+
+        <div id="test-screen">
+            <div class="top-bar">
+                <h2>GNS 103 PREP - GPA CBT</h2>
+                <div id="timer">10:00</div>
+            </div>
+            <div id="questions-container">
+                </div>
+            <button class="btn btn-submit" id="submit-btn" onclick="submitTest()">Submit Test</button>
+        </div>
+
+        <div id="result-screen" style="display:none;">
+            <h1>Test Completed!</h1>
+            <h2 id="score-display" style="font-size: 3.5rem; margin: 20px 0; color: var(--primary-color);"></h2>
+            <p id="score-message" class="subtitle" style="margin-bottom: 40px;"></p>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button class="btn" onclick="restartTest()">Retake Test</button>
+                <button class="btn" style="background:#6c757d;" onclick="viewCorrections()">Review Answers</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/template" id="raw-questions">
+GNS 103: 2016/2017 FIRST SEMESTER EXAMINATION
+TIME: 30 MINUTES
+1. 1A newspaper is a publication that is issued
+(a) Daily or Weekly+++
+(b) Monthly
+(c) Annually
+(d) Biannually
+2. Most serials especially journals are acquired through
+(a) Donation
+(b) Subscription+++
+(c) Exchange
+(d) Interlibrary loan
+3. One of the factors that affect the production and acquisition of serials is:
+(a) Constant change of serials title+++
+(b) Serials colour
+(c) Low cost
+(d) Lack of readership
+4. A major advantage of Electronic Serials is that:
+(a) they can also be accessed from outside the library+++
+(b) they are cheaper
+(c) On-line articles are difficult to access
+(d) None of the above
+5. The Reference unit houses reference materials that are:
+(a) Meant only for consultation +++
+(b) Meant for borrowing
+(c) For binding
+(d) for reserve.
+6. are reference materials that give general background information on a topic
+(a) Dictionaries
+(b) Directories
+(c) Encyclopedia+++
+(d) Index.
+7. Is an example of a general encyclopedia
+(a) Encyclopedia of Biology
+(b) Encyclopedia Britannica+++
+(c) Encyclopedia of Agriculture
+(d) Encyclopedia of Forestry.
+8. Provide basics data and statistics on topics such as education, health etc and published annually
+(a) Abstracts
+(b) Indexes
+(c) Yearbooks+++
+(d) Handbooks.
+9. Bibliography refers to:
+(a) A list of works complied on some common organizing principle, such as authorship, subject etc.+++
+(b) A book containing lists of names of residents, businesses organizations etc.
+(c) A book of language which provides information regarding the meaning, origin, spellings etc
+(d) Material that gives general background information on a topic.
+10. 2The following are advantages of using Non-print resources except:
+(a) Aid retention
+(b) preservation
+(c) Group instruction
+(d) Erratic power supply.+++
+11. One of the following is not part of audio-visual resources
+(a) Television
+(b) Video recordings
+(c) Digital media
+(d) World Atlas.+++
+12. Physical parts of a book consist of the following except:
+(a) Dust jacket
+(b) Binding
+(c) publisher+++
+(d) spine.
+13. Binding is:
+(a) That part of a book which holds the printed sheets together+++
+(b) The edge of the book that holds the printed sheets together
+(c) What contains the intellectual information
+(d) A blank leaf found at the beginning and end of a book.
+14. 3Books as the oldest forms of printed media include the following sub types except:
+(a) Monographs
+(b) Textbooks
+(c) Reference books
+(d) Realia.+++
+15. Copyright page is also known as:
+(a) Fly leaf
+(b) Preface
+(c) Title page
+(d) Verso page+++
+16. Cartographic materials are also known as:
+(a) Maps+++
+(b) Audio-visual materials
+(c) Objects
+(d) None of the above.
+17. FUTA library was opened to users on:
+(a) 1983+++
+(b) 1993
+(c) 1981
+(d) 2003.
+18. 4National Libraries are also known as:
+(a) Virtual libraries
+(b) Special libraries
+(c) Depository+++
+(d) Archival libraries.
+19. The word library is from a:
+(a) German word
+(b) French word
+(c) Latin word+++
+(d)Indonesia word
+20. The word liber means:
+(a) Book+++
+(b) Library
+(c) Literature
+(d) All of the above
+21. 5All these are functions of library except
+(a) Provision of seating and reading facilities
+(b) Provision of reference services
+(c) Keeping of academic records of students+++
+(d) Provision of users education
+22. Travel guide is an example of
+(a) Biographical reference source
+(b) Geographical reference source+++
+(c) Literature search tool
+(d) Electro basic background reference source
+23. Types of library can depend on the following except
+a. Types of services rendered to users
+b. Types of collections in the library
+c. Types of users
+d. Gender of the user+++
+24. 6FUTA library is an example of............
+(a) School library
+(b) Public library
+(c) Special library
+(d) Academic library+++
+25. A journal can be found in ............. unit of a library
+(a) Circulation
+(b) Reference+++
+(c) Serial
+(d) Porters
+26. ISBN means ...............
+(a) International Standard Book Number+++
+(b) International Standard Beaucratic Number
+(c) International Standard Backlog Number
+(d) International Standard Backcode Number
+27. 7Transparency is an example of ........... form of recording knowledge
+(a) Print
+(b) Non-print+++
+(c) Both a and b
+(d) None of the above
+28. The library that acts as national information bank is ............
+(a) Public library
+(b) National library+++
+(c) National Institute of Information
+(d) All of the above
+29. A place where we have large number of historical records is called ................
+(a) Public library
+(b) Archive+++
+(c) National library
+(d) School library
+30. 8Which unit in the library is responsible for the processing of books?
+(a) Serial unit are issued
+(b) Circulation unit
+(c) Reference unit
+(d) Cataloguing and Classification unit+++
+31. Users normally keep their personal belongings when entering the Library in the ............
+(a) Porters unit
+(b) Cloak room+++
+(c) Security room
+(d) Circulation desk
+32. 9Works on a single subject or aspect of a subject are called ...........
+(a) Monographs+++
+(b) Textbooks
+(c) Reference books
+(d) Pamphlets
+33. A term used for some geographical reference sources are........
+(a) Cartographic sources+++
+(b) Maps and Atlases
+(c) Locational gazetteers
+(d) Bibliographies
+34. Reference sources that provide information on individuals are called ...............
+(a) Fact ready reference sources
+(b) Background reference sources
+(c) Biographical reference sources+++
+(d) Literature search tools
+35. 10The index consulted by library staff to locate serial materials is..............
+(a) Kardex+++
+(b) Catalogue
+(c) Library card
+(d) OPAC
+36. The maximum number of books that undergraduate can borrow in the library is ..............
+(a) Five
+(b) Three
+(c) Four
+(d) Two+++
+37. Charging and discharging are performed in ............... unit of the library
+(a) Reference
+(b) Acquisition
+(c) Serial
+(d) Circulation+++
+38. The skills combined in locating and retrieving information is called ......................
+(a) Information literacy+++
+(b) Information process
+(c) Information awareness
+(d) Information protocol
+39. A library without wall is called.......
+(a) Digital library
+(b) Electronic library
+(c) Virtual library+++
+(d) Public library
+40. A book borrowed by undergraduate will be for a period of ...............
+(a) Three weeks
+(b) Four weeks
+(c) Two weeks+++
+(d) One week
+41. The followings are ways of acquiring materials in the library except
+(a) Purchase
+(b) Gift
+(c) Exchange
+(d) Binding+++
+42. The retrieval tool used to locate books on shelves in the library is .....
+(a) Library card
+(b) Catalogue+++
+(c) Kardex
+(d) School identity card
+43. Who is who is an example of ...............
+(a) Literature search tool
+(b) Geographical tool
+(c) Fact ready tool
+(d) Biographical tool+++
+44. A library that is attached to industrial or corporate organizations is .............
+(a) Private library
+(b) Public library
+(c) Special library+++
+(d) All of the above
+45. A library that is attached to post primary institutions is ...........
+(a) Academic library
+(b) School library+++
+(c) Public library
+(d) Special library
+46. All these are allowed in the library for users except
+(a) Borrowing of books
+(b) Using of catalogue
+(c) Returning consulted books on shelves+++
+(d) Rendering reservation services
+47. A book will have at least ....................numbers of catalogue
+(a) One
+(b) Two
+(c) Three+++
+(d) Four
+48. Registration of users in the library takes place at ................
+(a) Porters unit
+(b) Circulation unit+++
+(c) Information Communication and Technology unit
+(d) Serial unit
+49. Advantages of non-prints include the followings except
+(a) They aid retention
+(b) Group instruction
+(c) Preservation
+(d) Technology obsolescence+++
+50. The reference source that contains synonyms and antonyms with alternate words for identified is called ...............
+(a) Lexicon
+(b) Thesaurus+++
+(c) Dictionary
+(d) Special purpose dictionary
+51.11 ................ is not a type of library
+(a) Digital library
+(b) Electronic library
+(c) Virtual library
+(d) none of the above+++
+52. Selective dissemination of information is a typical library service performed mostly in the ........... library
+(a) Public
+(b) Special+++
+(c) Private
+(d) Digital
+53. 12............... is not one of the functions of the circulation unit in the library
+(a) responding to users’ questions
+(b) Charging and discharging of library materials
+(c) Registration of users
+(d) none of the above+++
+54. User education comprises all of the following except ..............
+(a) Reference service+++
+(b) Library tour
+(c) Display and exhibition
+(d) Library orientation
+55. “J” is a class mark that represents library materials under ..............
+(a) Political science+++
+(b) Social science
+(c) Science
+(d) Military science
+56. The following except one are methods of acquiring information materials in the library.
+(a) Bequest
+(b) accessioning+++
+(c) Inter-library loan
+(d) Library exchange
+57.13 ............. contains bibliographic details of a book including its copyright information
+(a) Title page
+(b) Preface
+(c) Verso page+++
+(d) Half title page
+58.14 ............ is an example of a cartographic material.
+(a) Encyclopedia
+(b) Slide
+(c) Realia
+(d) Map+++
+59. All but one of the following are advantages of using non-print materials.
+(a) They are good for distance learning programmes
+(b) They are not profitable for individualised learning+++
+(c) They are better accessed using electric power
+(d) They have large storage capacities
+60.15 ........... is an example of fact/ready reference resource
+(a) Directories+++
+(b) Abstract
+(c) Bibliography
+(d) Thesauri
+61. A systematic arrangement or list of bibliographic information is called ...........
+(a) Cataloque+++
+(b) A year book
+(c) A manual
+(d) A textbook
+62. An information material published in successive parts and intended to continue indefinitely is called ...........
+(a) A serial
+(b) A magazine
+(c) A periodical
+(d) All of the above+++
+63.16 ............. is not a characteristics of serial
+(a) It is dynamic
+(b) It contains International Standard Book Number +++
+(c) It dwells on specialized subjects
+(d) It is written by experts.
+64. 17............. is an annual information material containing mostly statistical information on various topics
+(a) Encyclopedia
+(b) Directory
+(c) Yearbook+++
+(d) Gazeeter
+65. .............. is an example of a literature search tool.
+(a) Map
+(b) Bibliography+++
+(c) Handbook
+(d) Dictionary
+66. ............. is a geographical dictionary
+(a) Gazette
+(b) Thesaurus
+(c) Bibliography
+(d) Gazetteer+++
+67. The display of newly acquired information materials in the library is an example of ...........
+(a) Reference service
+(b) Current awareness service+++
+(c) Selective dissemination of information
+(d) Reprographic service
+68. One of the following is not a type of index
+(a) Book index
+(b) Alphabetical index
+(c) Author index
+(d) Numerical index+++
+69.18 Information materials on technology are classified under ...............
+(a) S
+(b) T+++
+(c) Q
+(d) R
+70. ............... serves as a depository for all publications written about a country.
+(a) Public library
+(b) National library+++
+(c) Government library
+(d) Legislative library
+71. 19A paper designed to cover a published book is called .............
+(a) Dust jacket+++
+(b) Paper cover
+(c) Fly leaf
+(d) Spine
+72. An information material containing between five and forty-eight pages is known as .........
+(a) Monograph
+(b) Pamphlet+++
+(c) Bulletin
+(d) Book
+73. International Institute of Tropical Agriculture Library, Ibadan is an example of ............
+(a) Private library
+(b) Virtual library
+(c) Special library+++
+(d) Academic library
+74.20 One of the following is not a service performed in academic libraries
+(a) User education
+(b) Reprographic service
+(c) Bindery service
+(d) None of the above+++
+75. .............. is an example of a miniature storage medium
+(a) CD-ROM
+(b) Compact disk
+(c) Memory card+++
+(d) None of the above
+76.21 ISSN refers to .........
+(a) International Standard Serial Number
+(b) International Standard Subject Number+++
+(c) International Subject Serial Number
+(d) International Standard Sequence Number
+77. Nigeria who’s who is an example of a ...........
+(a) Background reference source
+(b) Fact/ready reference source
+(c) Biographical reference source+++
+(d) Geographical reference source
+78.22 .............. is a routine task performed in the acquisitions unit
+(a) Accessioning+++
+(b) Labelling
+(c) Cataloguing
+(d) Filing
+79. A library set up according to owner’s subject interest is ............
+(a) Personal library
+(b) Private library+++
+(c) Special library
+(d) Virtual library
+80.23 Providing information on where to get specific information materials is part of the function of ............unit
+(a) Reference+++
+(b) Circulation
+(c) Current awareness
+(d) Reprographic
+81. ................... is one of the problems encountered during the use of serials.
+(a) Change of technological development.
+(b) Authorship verification
+(c) A and B
+(d) None of the above+++
+82.24 Another name for information literacy is ...............
+(a) Library literacy
+(b) Media literacy
+(c) Computer literacy
+(d) All of the above+++
+83. One of the following is a bibliographic part of a book
+(a) Title+++
+(b) Text
+(c)Binding
+(d) Dust jacket
+84.25 ............. is a physical part of a book
+(a) Table of contents
+(b) Half title page
+(c) Verso page
+(d) Book Cover+++
+85. Another term for real object is.............
+(a )Realia+++
+(b) Specimen
+(c) Cartographic objects
+(d) Microforms
+86.26 All but one of the following is an example of a graphic material.
+(a) Motion picture
+(b) Slide
+(c) Still picture
+(d) Chart+++
+87.27 An information resource containing list of names of residents or organisations in a place is known as ...............
+(a) Book list
+(b) index
+(c) Directory+++
+(d) Bibliography
+88. An information resource published in successive parts and contains information is called a ................
+(a) Newspaper
+(b) Newsletter
+(c) Magazine
+(d) All of the above+++
+89.29 A book is an information material containing ........ pages
+(a) Less than 48 pages
+(b) 49 pages and above+++
+(c) 50 pages and above
+(d)Less than 49 pages
+90. ............... is an example of an audio-visual material
+(a) Still picture
+(b) Realia
+(c) Slides
+(d) Television+++
+91.30 The following are aspects of information literacy except
+(a) Media literacy
+(b) Computer literacy
+(c) Numerical literacy
+(d) Print sources of information+++
+92 Education is not only an instrument of social change but viewed as;
+(a) an investment in the national development+++
+(b) schools and other institutions
+(c) education in modern societies
+(d) necessary for the health and shelter
+93 Secondary information sources are
+(a) Created from primary materials interpreting original material+++
+(b) Photographs and drama
+(c) Created from articles in journals
+(d) from reviews and textbooks
+94 The term study skill is used for
+(a) General approaches to learning skills for specific courses of study+++
+(b) Theoretical works on the subject
+(c) Retention of lists of information
+(d) Efficient note-taking
+95 One of the following is the role of the library resources in education
+(a) Library enables the individual to obtain spiritual inspiration+++
+(b) Existing literacy institutions
+(c) Provide educators with access to relevant curriculum
+(d) All of the above
+96 The following are types of library except
+(a) National libraries
+(b) Public libraries
+(c) Private libraries
+(d) Education libraries+++
+97 ____________libraries are owned by an individual
+(a) School libraries
+(b) National libraries
+(c) Secondary libraries
+(d) Private libraries+++
+98 The ___________library assigns International Standard Book Number
+(a) Private library
+(b) School library
+(c) National library+++
+(d) Archive library
+99. ISSN means
+(a) International Secondary School Number
+(b) International School of Science Number
+(c) International Standard Serial Number+++
+(d) International School of Science Number
+100. 31The __________ is actively involved in inter-library lending schemes in a country
+(a) State governments
+(b) Library of congress
+(c) National Library+++
+(d) American library
+101. Readers’ Services Division comprises the following units except
+(a) General unit+++
+(b) Circulation unit
+(c) Reference unit
+(d) Porters/Security Unit
+102.32 __________________ is the unit where users are registered
+(a) Circulation unit+++
+(b) Porters’ unit
+(c) Security unit
+(d) Reference unit
+103 _____________ unit is responsible for maintaining security in the library.
+(a) Multimedia unit
+(b) Serial unit
+(c) Cataloguing and classification unit
+(d) Porters’ unit+++
+104.33 ____________ is the major method of acquiring resources in the Library.
+(a) Gift/donations
+(b) Inter-library loan
+(c) Purchase
+(d) All of the above+++
+105.34 Library resources in print format are those information carries that exist on paper
+(a) Yes+++
+(b) No
+(c) Yes or no
+(d) None of the above
+106. ___________ takes place when a library ______ some of its materials for the ones it lacks with another library that would have need for them
+(a) Library Exchange / systems
+(b) Permanent /arrangement
+(c) Library exchange/ exchanges+++
+(d) Borrowing/Exchange
+(e) None of the above
+107.35 ________________unit mainly stock postgraduate dissertations and the undergraduate projects
+(a) Publications and Repository Unit +++
+(b) Collection Development unit.
+(c) Acquisition Unit
+(d) Bequest
+(e) All of the above
+108. ____________ are the commonest forms of information carriers
+(a) Parts of a book
+(b) Books+++
+(c) Binding
+(d) The spine
+(e) None of the above
+109.36 ___________ is the edge of the book that holds the printed papers
+(a) The spine +++
+(b) Content
+(c) Text
+(d) Intellectual information
+110.37 The preliminary pages of the book consist of the following features except
+(a) Fly leaf
+(b) Half title page
+(c) Title page
+(d) Graphic materials +++
+111. These resources appeal strictly to the sense of sight except
+(a) Graphic materials
+(b) Cartographic materials or maps
+(c) Objects
+(d) All of the above+++
+112.38 These information resources combine the qualities of sight and sound appear in one media
+(a) Television+++
+(b) Graphics
+(c) Books and Radio
+(d) Microform
+113. Miniature mobile storage media are flash drives, memory cards, USB and smart cards
+(a) Yes +++
+(b) No
+(c) Yes and No
+(d) Yes or No
+114.39 The reference unit is a place in the library where the following materials except one are organised for consultation.
+(a) Dictionary
+(b) Annuals
+(c) Journals+++
+(d) Encyclopedia
+115. 40_____________ treat specific subjects like agriculture, medicine etc
+(a) General Encyclopedia
+(b) Subject encyclopedia+++
+(c) Encyclopedia Americana
+(d) Dictionaries
+116. Word entries are arranged alphabetically in the following materials except……..
+(a) Reference sources
+(b) Dictionaries
+(c) Directories
+(d) None of the above +++
+117. 41These sources provide basic data and statistics on topics such as education, health, sports, personalities or professions and are usually published annually.
+(a) Almanacs and yearbooks+++
+(b) Handbooks, manuals and guides
+(c) Literature search reference sources
+(d) Abstracts
+118. 42_______________ is a list of the books of a specific author, publisher or on a specific subject.
+(a) Periodical index
+(b) Bibliography+++.
+(c) Citation index
+(d) Book index
+119. 43Geographical sources are also known as cartographic sources.
+(a) Yes+++
+(b) No
+(c) Yes or No
+(d) Yes and No
+120. _____________ are good source of primary information
+(a) Journals+++
+(b) Volume
+(c) Books
+(d) Methods of acquiring series
+(e) Purchase
+121. 44Which of the following departments has among its responsibilities the selection and accessioning of information resources bought by or donated to the library.
+a) Circulation Unit
+b) Acquisition Unit+++
+c) Reference Unit
+d) Serials Unit
+122. A publication issued in successive parts at regular or irregular intervals , intended to be continued indefinitely are ________________
+a) Reference materials
+b) Serials+++
+c) Journals
+d) Documents
+123. 45Which of these resources is the odd one out
+a) Journals
+b) Newsletters
+c) Newspapers
+d) Dictionaries+++
+124. Which of these resources are published as volumes and issues / numbers, possess ISSN and contain articles
+a) Newspaper+++
+b) Encyclopaedia
+c) Dictionary
+d) Memo
+125. 46Cards in a catalogue cabinet are arranged
+a) Chronologically
+b) Serially
+c) Alphabetically+++
+d) Numerically
+126. The Punch is a
+a) Weekly journal
+b) Newsletter
+c) Daily journal
+d) Daily newspaper+++
+127. Guardian newspaper belongs to the class of materials called
+a) Textbooks
+b) Serials+++
+c) Journals
+d) Newsletters
+128. 47Undergraduate students are entitled to borrow maximum of _______ while postgraduate students are entitled to _________ number of books.
+a) 2 books and 4 books respectively+++
+b) 3 books and 6 books respectively
+c) 2 books and as many books as possible respectively
+d) one book and two books respectively
+129. All of the following are reference materials except
+a) Dictionaries
+b) Biographies
+c) Serials+++
+d) Yearbook
+130. 48One of the following is a reason why books may be found in the reserved collection
+a) Books are reference materials
+b) Books are a gift to the library
+c) Books are recommended by teaching staff+++
+d) Books are in bad condition.
+131. Services offered by the reference department include all except:
+a) Answering reference questions
+b) Current awareness services
+c) Referral services
+d) Binding of library materials+++
+132. Which of these is not a library service:
+a) Reprography
+b) Selective Dissemination of Information
+c) Book selling +++
+d) Current Awareness Services
+133. The library of the International Institute of Tropical Agriculture is also called ________
+a) Special library+++
+b) Academic library
+c) National library
+d) Archives
+134. Ondo State Library Board is an example of
+a) Archives
+b) State library
+c) National library
+d) Public Library+++
+135. 49The type of library that serves undergraduates and graduate students, researchers and faculty is called _____
+a) Document center
+b) Academic library+++
+c) National library
+d) Archives
+136. The unique10 or 13 digit identification number assigned to editions of books by the publisher is
+a) Accession number
+b) ISBN+++
+c) ISSN
+d) Call number
+137. In school libraries, which of the following group of resources is quite common:
+a) Audiovisual resources and textbooks+++
+b) Thesis and dissertation
+c) Memos and documents
+d) FAO publications and dictionaries
+138. The age, qualifications and experience of Mohammdu Buhari , the president elect could best be found in
+a) Who’s Who+++
+b) Directory
+c) Gazetteer
+d) Who was Who
+139. Encyclopedia Britannica and Encyclopedia Americana are examples of
+a) Subject encyclopaedia
+b) Special encyclopaedia
+c) Juvenile encyclopaedia
+d) General encyclopaedia+++
+140. 50Which of these options is odd:
+a) Atlas
+b) Map
+c) Gazetteer
+d) Manual+++
+141. Oxford English dictionary is a _______________
+a) General dictionary+++
+b) Special dictionary
+c) Dual purpose dictionary
+d) Lexicon
+142. The following are subject dictionaries except
+a) Dictionary of geology
+b) Longman Contemporary English Dictionary+++
+c) Dictionary of geology
+d) Dictionary of African Culture
+143. All but one of these resources is available in the Multimedia Unit.
+a) Microform
+b) Video
+c) Cassette
+d) Gazette+++
+144. Which of these options is odd:
+a) Television+++
+b) Map
+c) Chart
+d) Picture
+145. The library that issues ISSN and ISBN is the ____________
+a) Document center
+b) Academic library
+c) National library+++
+d) Archives
+146. Which of the following resources can be classified as primary information resources:
+a) Dictionaries
+b) Textbooks
+c) Theses and dissertations+++
+d) Handbooks
+147. Appendices are the part of a book that _________.
+a) states the authors intention for writing the book
+b) shows the topics in the book and where they can be found
+c) shows the outline of the book
+d) contains supporting but not too essential information in the book+++
+148. ISSN means _______________
+a) Internal Standard Serial Number
+b) International Social Standard Networking
+c) International Standard Social Number
+d) International Standard Serial Number +++
+149. Opening and closing hours of the University Library, FUTA are ______________ and ____________
+a) 9.00am and 10.00pm respectively
+b) 8.00am and 10.00pm respectively+++
+c) 8.00am and 4.00pm respectively
+d) 8.00am and 5.00pm respectively
+150. An information resource intended for consultation only and not thorough reading is called
+a) Novel
+b) Reference material+++
+c) Serial material
+d) Reserved material
+151. The Federal University of Technology Library Akure was established in 1982 but it was not officially opened to users community until
+A. 1982
+B.1983+++
+C.1984
+D. 1985
+152. The copyright page of a book contains the following information except
+A. Author’s Name
+B.Imprint
+C. Printer’s Name
+D. Printer’s Intention+++
+153. Periodicals are identified by a number referred to as
+A. ISSN+++
+B. ISBN
+C. ISSM
+D. DDC
+154. A typical example of an index is
+A. Serial collection
+B. Book title
+C. Library Catalogue+++
+D. Glossary found in a book
+155. The following are the features of books except
+A. Chapter
+B. Edition
+C. Volume number +++
+D. Preface
+156. One of the following is a subject reference book
+A. Encyclopedia Americana
+B. Biographical reference sources
+C. Encyclopedia Britannica
+D. Dictionary of Proverbs+++
+157. Among other things, study skills include mnemonics which help in
+A. Retention of information+++
+B. Effective reading
+C. Concentration techniques and note taking
+D. All of the above
+158. The call number or location number is combination of
+A. Subject number and Author number+++
+B. Subject number and Accession number
+C. Volume number and Issue number
+D. Subject number and ISBN
+159. The Library of Congress classification scheme is divided into ______ classes
+A. 21+++
+B. 22
+C. 23
+D. 24
+160. In Dewey decimal Classification, 300 stands for
+A. Technology
+B. Languages
+C. Social sciences+++
+D. Generalities
+161. A running number carried by each library book indicating when it was acquired into the collection of the library is called
+A. International Standard Book Number
+B. Call number
+C. Volume and issue number
+D. Accession Number+++
+162. A bulletin issued periodically to a group of defined individuals of a society, business or organization is known as
+A. Newspaper
+B. B. Newsletter+++
+C. C. News item
+D. D. Journals
+163. A distinguishing factor of a Journal is its
+A. Volume and issue numbers +++
+B. Volume and serial numbers
+C. Volume and book numbers
+D. Volume, serial and book numbers
+164. Personal Digital Assistant can be used to organize one’s
+A. Company’s appointments, tasks, address lists telephone information
+B. Ones business or personal schedules,calendar,addresses and book information+++
+C. Institution’s corporate overall information
+D. Students’ overall information while in their institutions of learning
+165. Current Awareness Services include all the following except
+A. Selective Dissemination of Information
+B. Publication of Current Contents
+C. New Arrivals Lists
+D. Translation Services+++
+166. Which one of the following is an odd-man-out?
+A. Basic background references sources
+B. Fact or ready reference sources
+C. Literature search tools
+D. Geomorphological references sources+++
+167. The name of the Federal University of Technology, Akure Library is
+A. FUTA Library
+B. The Library
+C. Albert Ilemobade Library+++
+D. None of the above
+168. To evaluate a website, factors to be considered include all but
+A. Time of download
+B. Authority
+C. Currency+++
+D. Name of organization/institution the website is affiliated to
+169. With advancing technologies, OPAC, MARC and others, library users can be ______ in the world
+A. No one
+B. Any one+++
+C. FUTA Students
+D. Local
+170. When classifying a book, one can get information about the nature, purpose and scope of the book from its
+A. Dedication
+B. Preface+++
+C. Acknowledgement
+D. Title page
+171. Classification schemes include the following except
+A. Library of Congress
+B. Dewey decimal Classification
+C. Bloom’s Taxonomy Classification+++
+D. Universal Decimal Classification
+172. Libraries found in primary and secondary schools are classified as
+A. Academic Libraries
+B. School Libraries+++
+C. Schools’ Libraries
+D. Private Libraries
+173. Registration of library users take place in a Unit of the library called
+a. Reference Unit
+b. Porter’s Unit
+c. Cataloguing Unit
+d. Circulation Unit+++
+174. The Porters’ Unit among other things
+A. See to the security of all library materials
+B. Check people as they come into the library and go out of the library
+C. Maintain order in the library
+D. All of the above+++
+175. One of the ways of acquiring information in the library is
+A. Seeking for information
+B. Bequest+++
+C. Passing information round
+D. Borrowing
+176. Collation in a typical catalogue card entry gives information such
+A. Books length
+B. Notation about maps or illustrations
+C. Pagination
+D. All of the above +++
+177. Libraries found in the Central Bank of Nigeria, Nigerian Institute of International Affairs and Shell Development Company are;
+A. Academic Libraries
+B. School Libraries
+C. Special Libraries+++
+D. Company Libraries
+178. The place and organ that houses and is responsible for the collection and preservation of public and historic resources for use of the public and researchers is called
+A. Archives+++
+B. Information Centres
+C. Libraries
+D. Bookshops and store houses.
+179. Information literacy involves the abilities that require a person to
+A. Identify when a particular information is needed
+B. Have the ability to locate the needed information
+C. Use effectively and efficiently the information
+D. All of the above+++
+180. Collections in a Reference Unit can be identified by an acronym known as
+A. FEF
+B. REF+++
+C. JOU
+D. BRD
+181. Names and addresses of women organizations in Nigeria can be found in……..
+a. Dictionaries
+b. Encyclopeadia
+c. Directory+++
+d. Travel guide
+182. All except one of these library materials is a serial publication
+a. Magazine
+b. Scientific journal
+c. Atlas+++
+d. Newsletter
+183. Gazetteer can be located at which of these sections of the library….
+A. Serials Unit
+b. General reading Room
+c. Reference Unit
+d. Government Documents+++
+184. The National Library of Nigeria was established in……….
+a. 1925
+b. 1960
+c. 1964
+d. 1971+++
+185. ISBN means ………
+a. International Standard Bibliographic Number
+b. International Standard Book Number+++
+c. International Serial Book Number
+d. International Standard Book Notation
+186. ………………… is the type of library responsible for collection of legal deposit in Nigeria
+a. Special library
+b. Public library
+c. National library+++
+d. Government library
+187. Publications that give brief and concise information about the content of document especially scientific journals is known as …….
+a. Bibliographies
+b. Abstracts+++
+c. Handbooks
+d. indexes
+188. Publication of any format issue in successive parts having chronological or numeric designation is known as ………………
+a. References
+b. Serials+++
+c. Transactions
+d. Journals
+189. An Act of parliament is an example of ……………
+a. Reference material
+b. Monographs
+c. Government publications+++
+d. Serial publication
+190. Graphic information about the vegetation, relief and population of Ghana can be found in ……
+a. Biographical References
+b. Serial publications
+c. Atlases+++
+d. Directories
+191. Sketches about important personalities in the world can be obtained from ……….
+A. Directories
+b. Biographical references+++
+c. Geographic dictionaries
+d. Newspapers
+192. List of universities and Higher institutions in West Africa is an example of ……..
+a. Dictionaries
+b. Geographic source
+c. Encyclopedia
+d. Directories+++
+193. GNS 103: Information Retrieval course is designed by university to achieve all of the following except ………..
+a. Make librarian out of the students+++
+b. Inculcate information skills in the students so that they can become life long learners
+c. Teach students the importance of information to their academic pursuit
+d. Develop research skills in students
+194. Which of the following is not an audio visual materials
+a. Filmstrips
+b. Motion pictures
+c. Monographs+++
+d. Transparencies
+195. An institution saddled with the responsibility of acquisition, processing and preservation of records of enduring value is called …….
+A. Library
+b. Archive+++
+c. Documentation Centre
+d. Museum
+196. Registration of library users is the responsibility of …………..
+a. Readers Service Division
+b. Reference unit
+c. Circulation Unit+++
+d. Porters Unit
+197. Undergraduate project can be obtained from
+a. Main Library
+b. Document unit
+c. General Reading Room
+d. School Library+++
+198. A user of University Library Federal University of Technology Akure intending to use the Library of Adekunle Ajasin University Library must ………
+a. Present his /her university ID card
+b. Library Card
+c. Letter from his / her HOD
+d. Letter of introduction from his library+++
+199. Albert Ilemobade Library FUTA is an example of ……….
+A. school Libraries
+b. University Libraries
+c. Academic Libraries+++
+d. Research Libraries
+200. One of the following statement is not true about library catalogue
+a. Library catalogue contains list of all the library materials in the library
+b. Catalogue is to keep records of all the materials in the library for posterity+++
+c. To serve as search tool for retrieving information material available in the library without wasting their time
+d. Library catalogue gives information about author, title and subject to enhance quick retrieval of information materials
+201. The library of the Federal Institute of Industrial Research Oshodi (FIIRO) is an example of ….
+A. Institute library
+b. Special library+++
+c. Public library
+d. Private library
+202. All but one of the following reasons is not associated with copyright date ………
+a. To ascertain the year the book is published
+b. To ascertain the recency of the publication
+c. It serves as selection criteria for selection of book to be acquired
+d. To know when copyright date expires+++
+203. One of the following library materials is a primary source of information
+a. Bibliographies
+b. Scientific Journals+++
+C. Abstracts
+d. Indexes
+204. …………….. is the Classification Scheme adopted by the University Library Federal University of Technology, Akure for organisation of their materials
+a. Dewey Decimal Classification Scheme (DDC)
+b. Universal Decimal Classsification Scheme (UDC)
+C. Library of Congress Classification Scheme (LC)+++
+d. Colon Classification
+205. Kardex is a specialise catalogue use for …………
+a. Serial collection+++
+b. Reference Collection
+c. Books
+d. Scientific Journals
+206. Which of the following statement is not true about social media as information service delivery media
+a. Sharing news update
+b. information tracking and monitoring
+c. disseminating pornographic information+++
+d. Execution of campaigns.
+207. One of these services is not rendered by the university library Federal University of Technology Akure
+a. Compilation of bibliography
+b. Current awareness services
+c. Services to physically challenge+++
+d. User education
+208. ISI web of knowledge is published by
+a. Spinger
+b. Thomson Reuters+++
+c. Elsevier
+d. Emerald Insight
+209. Theses and dissertations are …………. Sources of information
+a. Secondary
+b. Tertiary
+c. primary+++
+d. b and c
+210. ‘Fair use’ in copyrighted works is …….
+a. To allow researcher to make use of part of work for academic purpose only+++
+b. Allow researchers to copy the whole work for academic purposes only
+c. a and b
+d. To allow the work be used for any purpose without authorization.
+211 The acronym OPAC means ………………..
+(a) Online Public Awareness Card
+(b) Online Public Awareness Catalogue
+(c) Online Private Access Catalogue
+(d) Online Public Access Catalogue+++
+212 The university library of FUTA has been renamed to
+A Francis Idibiye Library+++
+B Albert Ilemobade Library
+C Peter Kolawole Library
+213 The female cloakroom of the university library when entry is at
+A Left hand side+++
+B Right hand side
+c At the Centre
+d Back of the porter’s lodge
+214 all these are allowed in the library except
+A Borrowing of books
+B Access to internet services
+C Renewal of lost card
+D Group discussion among readers+++
+215 All these are forms of damage to library books except
+A Mutilation
+B Binding of library books+++
+C tearing of library books
+D defacing of library books
+216 All these are characteristics of serials except
+A They have ISSN
+B They are often acquired through subscription
+C The content in each volume differs from another
+D They are not published successfully+++
+217 Advantages of using electronic serials include these except
+A E-serials are easy to read and revise
+B They can be easily manipulated
+C they cannot be access within library+++
+D they can be accessed by many users at the same time
+218 The type of library catalogue is
+A Title catalogue
+B Author catalogue
+C Subject catalogue
+D Divided catalogue+++
+219 The classification scheme used in FUTA library is
+A Universal decimal scheme
+B Dewey decimal scheme
+C Library of congress scheme+++
+D international library scheme
+220 The acronym “http” means
+A Hypertext transfer protocol+++
+B Hypertext transmission protocol
+C Hypertext tutor protocol
+D Hypertext transfer procedure
+221 All these are search engines except
+A Hyper+++
+B Hotbot
+C Google
+D Excite
+222 All these are browsers except
+A Mozilla
+B Fire fox
+C Opera mini
+D Exposure+++
+223 The acquisition of knowledge and skill using electronic technologies with internet- based course ware and wide range networks is called
+A E-Learning +++
+B Group learning
+C distance learning
+D Project learning
+224 In library of congress classification scheme ‘R’ represents
+A Religion
+B Medicine+++
+C Social Science
+D Fine arts
+225 A number 86-013575 on a catalogue card represents
+A Call mark
+B No tuition number
+C Accession number+++
+D Author’s number
+226 The library type that has collection for all categories of users is
+A private library
+B Public library+++
+C School library
+D Academic library
+227 A library without wall is called
+A Virtual library+++
+B School library
+C Public library
+D Private library
+228 Factors to be considered when evaluating internet materials include these except
+A Credibility
+B Objectivity
+C Price+++
+D Support
+229 “WWW” represents in ICT word
+A Wide world web
+B Web world wide
+C World web wide
+D World wide web+++
+230 The supplementary information that may be useful to a reader is
+A Appendices+++
+B Conclusion
+C Table of contents
+D Title page
+231 A reader can use the university library only if he/she has
+A Formally registered in the library+++
+B Formally given admission by the university
+C Formally matriculated in the university
+D Formally introduced as a FUTA student
+232 A good report should have one of the following
+A References+++
+B Referees
+C Dust jacket
+D Monograph
+233 When citing for scholarly publications one of the following is not required
+A Place of publication
+B Bibliography+++
+C Publisher’s name
+D Author’s name
+234 is a type of geographical reference source
+A Gazetteer+++
+B Manual
+C Index
+D Gazette
+235 is not a type of library catalogue
+A card catalogue+++
+B Classified catalogue
+C Divided catalogue
+D Union catalogue
+236 is an example of an internet service
+A E-mail
+B Mailing list
+C File transfer protocol
+D All of the above
+237 One of the following is a service performed in the library
+A Current awareness service
+B Bibliography service
+C Document delivery
+D None of the above+++
+238 Internet telephony allows voice calls using
+A Laptop
+B Infinix phone
+C Desktop computer
+D All of the above+++
+239 Web log is another name for
+A Newsgroup
+B E-mail
+C Internet protocol
+D Blog+++
+240 One of the following is not a function of a library catalogue
+A It identifies the work of editors only+++
+B It gives index to the library collection
+C It shows the library’s holding
+D It describes the materials in the library
+241 is a collection of maps
+A Gazetteer
+B Atlas+++
+C Gazette
+D none of the above
+242 All of the following are types of audio- visual materials EXCEPT-----------------
+(a) Realia
+(b) microFilm
+(c) Slide
+(d) Furniture +++
+243 --------------------------is one of the greatest offence in the library
+(a) Reading
+(b) Eating +++
+(c) Writing
+(d) Studying
+244. -------------------and ------------------- are one of the routine duties of a librarian
+(a) shelving and shelf-reading +++
+(b) Reading in the library
+(c) Writing
+(d) Eating
+245. A place where Artefacts materials are organised, kept and made available on requested
+(a) Library
+(b)Archive
+(c) Zoology
+(d) Museum +++
+246. The act of impacting library instructional skills and use to students is called-----------
+(a) Library operations
+(b) Library guide
+(c) Users Education
+(d) Extension services
+247. All EXCEPT one are reference materials that gives geographical information to users
+(a) Travellers guide
+(b) Maps
+(c) Atlas
+(d) Encyclopaedia +++
+248. All EXCEPT one aretypes periodical information materials in the library
+(a) Library users manuals+++
+(b) Journals
+(c) Magazines
+(d) Newspapers
+249. What is the name of FUTA Library
+(a) Albert Ilemobade Library +++
+(b) Albert Macaulay Library
+(c) Albert Daramola Library
+(d) Futa Resources Library
+250. A process in which all bibliographic information and other related information about any book are accessed through computer terminal is called----------------
+(a) public access catalogue
+(b) machine catalogue
+(c) colour classification scheme
+(d) online public access catalogue +++
+251. The commonest classification scheme used in most academic library is --------------
+(a) BLISS classification scheme
+(b) Dewey decimal classification scheme
+(c) library of congress classification scheme +++
+(d) Colon classification scheme.
+252. One of the common features of a dictionary catalogue is---------
+(a) Entries are made under author
+(b) Entries are made under subject
+(c) Entries are interfiled in alphabetical sequence +++
+(d) Entries are made under title.
+253. Charging and discharging of books is one of the major functions of -------------unit
+(a) Reference Unit
+(b) Bindery Unit
+(c) serials Unit
+(d) circulation unit +++
+254. One of the paramount of a National library is-------
+(a) to provide research information services
+(b) to provide protection and security for information materials
+(c) to publish National Bibliography +++
+(d) to enhance the development of reading skills.
+255. One of the filing methods in the library is-------
+(a) word by word +++
+(b) letter by word
+(c) word by letter
+(d) letter by initial alphabet.
+256. A unique feature of a special library is---------------
+(a) it serve all categories of users
+(b) it extends its lending to all users
+(c) its collection cur across all disciplines
+(d) it serves only the employees of the organization +++
+257. A system designed to acquire printed and non-printed information materials, organized and interpret with the aim of providing information to users in solving their information related problems is referred to as ---------
+(a) collection development
+(b) research
+(c) library +++
+(d)catalogue
+258. The primary motive of organizing library materials is to facilitate one of the following--------
+(a) Building up library catalogue
+(b)effective circulation operation
+(c) Accessibility and retrieval of library resources +++
+(d) effective reference services
+259. All except one is not a function of a library catalogue
+(a) it assists users to locate a new book written by a familiar author
+(b) it helps users to locate books on a particular subject area
+(c) it shows the series of a work on a subject
+(d) it is durable and user-friendly +++
+260. An uncommon situation which the library prepare against its occurrence is --------
+(a) theft
+(b) bequeath
+(c) weeding
+(d) flood and fire +++
+261. Constant changing of titles is one of the problems of -----------
+(a) clippings
+(b) Abstracts
+(c)Serials +++
+(d) Audio –visual
+262. Encyclopaedia resources can be located in----------- units of the library
+(a) Reference Unit +++
+(b) Circulation Unit
+(c) Bindery Unit
+(d) Cataloguing Unit
+263. ---------------- directs users to the exact location of a book on the shelf
+(a)Accession number
+(b)Entry Heading
+(c) Catalogue +++
+(d) Call marks
+264. A basic reference collection is made up of all EXCEPT---------------------
+(a) Dictionaries
+(b) Encyclopaedias
+(c) Textbooks +++
+(d) Gazetteers
+265. ------------------- is a serious offence in the Library
+(a) writing
+(b) reading
+(c) noise making +++
+(d) research
+266. The following are the methods used to acquire serials materials in the library EXCEPT--------- 
+(a) Purchase
+(b) Gift
+(c) Donation
+(d) Supply +++
+267. All of these EXCEPT one is not an information sources
+(a) primary information sources
+(b) secondary information sources
+(c) Tertiary information sources
+(d) Universal information sources +++
+268. A library owned by an individual is an example of a ----------
+(a) personal library
+(b) school library
+(c)private library +++
+(d) individual library
+269. --------------- are example of an academic libraries
+(a) University libraries, college of education libraries and polytechnics libraries +++
+(b) college libraries, schools libraries
+(c) polytechnics libraries, college of education libraries and private libraries
+(d) None of the above
+270. All of the following are types of library EXCEPT
+(a) Academic Libraries
+(b) National Archives +++
+(c) National Libraries
+(d) School libraries
+271. The information required for ordering and cataloguing of books include all EXCEPT one of these-------
+(a) ISBN
+(b) Author
+(c)Accession number +++
+(d) Title
+272. A process in which all bibliographic information of a particular book are listed in a definite pattern is called--------------
+(a) collection development
+(b) title entry
+(c) Added entries
+(d) Bibliographic description +++
+273. The Routines in the circulation units in the library is to enable---------------make the best use of the library
+(a) Porters
+(b) Users +++
+(c)Technician
+(d) Professionals
+274. All except one is not a social media site
+(a) Whatsapp
+(b) OPAC +++
+(c)Facebook
+(d) Twitter
+275. All of the following are types of library catalogue EXCEPT-----------
+(a) Dictionary Catalogue
+(b) Union Catalogue
+(c) Divided Catalogue
+(d) Card Catalogue +++
+276. All except one is not a Bibliographic details of an information materials
+(a) Author
+(b) OPAC +++
+(c) Title
+(d) Publisher
+277. ----------------- is a geographical location of a places
+(a) Dictionary
+(b) Encyclopaedia
+(c) Year book
+(d) Map +++
+278. All of the following are Printed collections EXCEPT---------------------
+(a) Dictionaries
+(b) Encyclopaedias
+(c) Textbooks
+(d) E-Resources +++
+279. All EXCEPT one is not a classification scheme used in the library
+(a) DDC
+(b) UDC
+(C) OPAC +++
+(d)LC
+280. A good report basically has the following section EXCEPT one.
+(a) Flyer +++
+(b) Title
+(c) Table of contents
+(d) Introduction
+281. All EXCEPT one are sources of information in a report writing
+(a) The library
+(b) Bookshop +++
+(c) Bibliographies
+(d) Catalogue
+282. -------------------is the library software used in futa library
+(a) CDS/ISIS
+(b) Alice for window
+(c) SLAM +++
+(d) GLASS
+283. All EXCEPT one is not a storage devices in a computer system
+(a) Portable hard disks
+(b) Floppy Disk
+(c) SLAM Disc +++
+284. CD-DVDs A basic reference collection is made up of all EXCEPT---------------------
+(a) Dictionaries
+(b) Encyclopaedias
+(c) Textbooks +++
+(d) Gazetteers
+285. ------------------- is a serious offence in the Library
+(a) writing
+(b) reading
+(c) noise making +++
+(d) research
+286. The following are the methods used to acquire serials materials in the library EXCEPT--------- 
+(a) Purchase
+(b) Gift
+(c) Donation
+(d) Supply +++
+287. All of these EXCEPT one is not an information sources
+(a) primary information sources
+(b) secondary information sources
+(c) Tertiary information sources
+(d) Universal information sources +++
+288. A library owned by an individual is an example of a ----------
+(a) personal library
+(b) school library
+(c)private library +++
+(d) individual library
+289. --------------- are example of an academic libraries
+(a) University libraries, college of education libraries and polytechnics libraries +++
+(b) college libraries, schools libraries
+(c) polytechnics libraries, college of education libraries and private libraries
+(d) None of the above
+290. All of the following are types of library EXCEPT
+(a) Academic Libraries
+(b) National Archives +++
+(c) National Libraries
+(d) School libraries
+291. The information required for ordering and cataloguing of books include all EXCEPT one of these-------
+(a) ISBN
+(b) Author
+(c)Accession number +++
+(d) Title
+292. Which of the following best describes Information literacy
+a. The ability to read
+b. The ability to use computer
+c. The ability to reference
+d. The ability to define an information need and satisfy it +++
+293. To find ALL books a library has on Cost analysis, one needs to consult the:
+a. The subject catalogue+++
+b. The author catalogue
+c. The universal catalogue
+d. The title catalogue
+294. To find materials on the shelf in the library, one would need to use:
+a. The call number+++
+b. The shelf number
+c. The ISBN number
+d. The title
+295. Which is not true about scholarly journals
+a. The articles usually have citations and references
+b. Their articles are often peer-reviewed
+c. The information is usually technical in nature
+d. The articles are usually authored by journalists+++
+296. Which of this is NOT part of a citation
+a. Author
+b. Title
+c. Date of publication
+d. Call number+++
+297. A common reference style used by students is:
+a. ATA
+b. CMA
+c. APA+++
+d. TAA
+298. An article abstract is
+a. The full text of an article
+b. Information about where the article can be found
+c. A summary of the article+++
+d. The cost of the article
+299. Which of the following would not be considered a primary source material
+a. A 1975 newspaper on the political situation of Nigeria
+b. A report from a study about students use of Social media for educational purpose
+c. An article in a journal about the effectiveness of a nutritional supplement
+d. A chapter in a course book that discusses information literacy+++
+300. Using call numbers, books are arranged on the shelves based on
+a. Author
+b. Title
+c. Year of publication
+d. Subject+++
+301. Plagiarism is _____
+a. Including other people’s ideas in your write-up
+b. Using someone’s ideas in your paper but not crediting the source+++
+c. Acknowledging the source of any information cited
+d. Including only primary sources in your write-up
+302. Journals are preferred for research because __________
+a. They contain out dated information
+b. They contain up-to date information of a technical nature+++
+c. They contain popular information
+d. They contain general information for public consumption
+303. Information in journals have all of the following characteristics except:
+a. Technical information
+b. Factual information
+c. Information of general interest+++
+d. Research findings
+304. Most scholarly journals are published by _________
+a. Newspaper houses
+b. Internet and the World Wide Web
+c. NGOs
+d. Academic institutions and professional bodies +++
+305. “Popular” articles for general readership can be found in
+a. Journals
+b. Government documents
+c. Conference proceedings
+d. Magazines+++
+306. Which of these is a subject encyclopedia?
+a. Encyclopedia Americana
+b. Encyclopedia of Genetic engineering+++
+c. Encyclopedia Britannica
+d. Wikipedia
+307. Which of these would be good for providing background information on a topic
+a. Encyclopedia Americana+++
+b. Gazetteer
+c. Journal of Contemporary Water Research
+d. FUTA Yellow pages
+308. One of this is common to Magazines, Journals and Newspapers
+a. Chapters
+b. ISBN
+c. New Edition
+d. Volume and/or Issue Number+++
+309. You have been asked to find articles that discuss a political issue currently being debated in the media. What type of source should you look for?
+a. Daily newspaper+++
+b. Encyclopedia
+c. Textbook
+d. Scholarly journals
+310. Which of the following should be the least important consideration when developing a topic for your GNS 101 Term Paper assignment
+a. It meets the requirement of the assignment
+b. It will be interesting to you and your readers
+c. It supports your personal values+++
+d. Enough high quality sources are available to back up your statements
+311. All the following are Boolean operators except
+a. WITH+++
+b. OR
+c. NOT
+d. AND
+312. When OR is used between key words in a search engine
+a. When any of two or more search terms must be present in search results
+b. When you need to increase or broaden search results
+c. When any two or more words are close and any of the two can appear in the search results+++
+d. When you need to eliminate a word from your results
+313. Which of the following statements is true:
+a. Only experts can publish Web pages
+b. An author’s motivations can impact the information that he /she publishes on the Web+++
+c. Websites don’t have authors
+d. Web site authors are unbiased
+314. The URL address: http://www.epa.gov/climatechange shows that the website :
+a. is published by an educational institution
+b. is trying to sell something
+c. is used for public awareness
+d. is published by a government agency+++
+315. The URL address: http://ui.edu.ng/content/centres-excellence shows that the website :
+a. is published by an educational institution+++
+b. is trying to sell something
+c. is used for public awareness
+d. is published by a government agency
+316. Which of the following is not a reason to cite your sources
+a. They lend authority to your work
+b. They let readers retrieve sources that you have cited
+c. They give credit to the cited sources
+d. They increase the grade of the author+++
+317. The maximum number of characters allowed on twitter is :
+a. 120
+b. 140 +++
+c. 160
+d. 180
+318. Which of the following is not a social media application
+a. Facebook
+b. Fickr
+c. YouTube
+d. Likedblog+++
+319. The largest online professional network website
+a. Instagram
+b. Facebook
+c. Twitter
+d. LinkedIn+++
+320. Instagram is __________
+a. The largest professional network website
+b. A photo and video sharing social networking website+++
+c. A microblogging platform
+d. A blog site
+321. A website through which users create online communities to share information, ideas, personal messages and other content is called ____________________
+a. Social media+++
+b. Scholarly database
+c. Database
+d. OPAC
+322. One of the following is an odd option:
+a. Google+
+b. LinkedIn
+c. Naijagist+++
+d. My Space
+323. The founder of Facebook is:
+a. Mark Zuckerburg+++
+b. Bill Gate
+c. Micheal Townsend
+d. Innocent Emagwali
+324. Twitter is an example of ____________ service
+a. Blogging
+b. Programming
+c. Gaming
+d. Microblogging+++
+325. Facebook, My Space and Google+ are all examples of what type of service:
+a. E-learning
+b. Social networking+++
+c. Web portal
+d. Wiki
+326. Hashtag ( #) is uses in which of these services:
+a. Facebook
+b. Instagram
+c. LinkedIn
+d. Twitter +++
+327. What are the four steps involved in report writing?
+a. Plan, think, write and revise
+b. Revise Plan, think, write
+c. Think, plan, write and revise+++
+d. Write, plan revise and think
+328. What is an executive summary use for in a report?
+a. To grab the attention of the reader+++
+b. To keep the summary brief
+c. To discourage further reading of the main report
+d. To reduce the number of the pages of the report
+329. The sections in a report are arranged in this order:
+a. Body of report, Introduction, title page, conclusion, table of contents,
+b. Table of contents, title page, conclusion, Introduction, body of report
+c. Title page, abstract, introduction, body of report, conclusion, reference+++
+d. Title page, abstract, body of report, conclusion, reference, introduction
+330. In report writing, recommendations are based on ______
+a. Findings+++
+b. Conclusion
+c. Introduction
+d. Title page
+331. In APA style, in-text citation consists of :
+a. Author and year of publication+++
+b. Publisher and year of publication
+c. Author and cost
+d. Year of publication and publisher
+332. Each source listed in the reference list must be cited in the
+a. Text+++
+b. Table of contents
+c. Abstract
+d. Conclusion
+333. Which of the following is the correct APA Reference list entry?
+a. Reese G. (2000). Database Programming with JDBC and Java. Beijing: O’Reilly Media+++
+b. Reese G. Database Programming with JDBC and Java. Beijing: O’Reilly Media (2000).
+c. Database Programming with JDBC and Java. Beijing: O’Reilly Media. Reese G. (2000).
+d. Reese G. (2000).Beijing: O’Reilly Media. Database Programming with JDBC and Java.
+334. In the University Library, one can use SLAM to identify all of the following except:
+a. The number of books on a specific subject
+b. The availability of a particular title
+c. The books published by a particular author
+d. The librarian who classified the book+++
+335. Journal articles can be found in all of the following places except:
+a. Scholarly Databases like EBSCOHost
+b. Serials Unit
+c. General Reading Room+++
+d. The Internet (WWW)
+336. To find facts and statistics about a country, I would need to search in:
+a. Encyclopedia
+b. Dictionary
+c. Almanac+++
+d. Atlas
+337. To find if “shroud is a noun, adverb, adjective etc
+a. Encyclopedia
+b. Dictionary+++
+c. Almanac
+d. Atlas
+338. To find a long detailed description of the United States of America
+a. Encyclopedia+++
+b. Dictionary
+c. Almanac
+d. Atlas
+339. To find the locations of cities , states and river
+a. Encyclopedia
+b. Dictionary
+c. Almanac
+d. Atlas+++
+340. To find last year’s winners of the academy awards
+a. Encyclopedia
+b. Dictionary
+c. Almanac+++
+d. Atlas
+341. To find the longitude and latitude of Lagos, Nigeria
+a. Encyclopedia
+b. Dictionary
+c. Almanac
+d. Atlas+++
+342. To find how to pronounce the word “Cygnet”
+a. Encyclopedia
+b. Dictionary+++
+c. Almanac
+d. Atlas
+343. The least important factor to consider when evaluating an informational website for use in a research paper is?
+a. Authority
+b. Accuracy
+c. Currency
+d. Font size+++
+344. As general good preservation practices for library materials that are in poor state, the library staff has the obligation to
+A. Withdraw them for repair +++
+B. Benefit from information literacy on proper handlings of books
+C. Purchase back-up types of electronic library materials
+D. Allow the materials to gather dust
+345. As part of specific rules for the library, the library user who loses any library material will pay the cost of the material plus administrative charge of
+A. 20%
+B. 30%
+C. 15% +++
+D. 25%
+346. The internet telephony is voice over
+A. Internet software
+B. Internet search engine
+C. Internet browser
+D. Internet protocol +++
+347. The checklist for research evaluation include all except
+A. Credibility
+B. Injectibility +++
+C. Objectivity
+D. Accuracy
+348. When a researcher cites an electronic source he/she should have a copy of the material because
+A. Internet – based materials are short-lived on the web+++
+B. Internet – based materials are short
+C. Internet can be affected by power outage
+D. The author of the material may not be known.
+349. Some benefits of e- resources are
+A. Ability to write down the document in one’s language
+B. Easy copy of the material
+C. Manipulation of words
+D. None of the above +++
+350. Albert Ilemobade Library has a publication titled
+A. Guide to the Library 2014-2018+++
+B. Guide to the University Library: 2014-2017
+C. Guide to the Library 2013-2014
+D. Guide to the Library to Albert Ilemobade Library
+351. FUTA Institutional Respiratory include all publications collected from inception of the
+A. University Library and kept in one database
+B. University and kept in one database +++
+C. School and kept in one database
+D. None of the above
+352. To find a book, a library patron should first consult the library
+A. Book shelves
+B. Reading areas
+C. Library catalogues +++
+D. Classification scheme
+353. The library of Congress Classification Scheme is divided into ____________ main classes
+A. 30
+B. 10
+C. 21 +++
+D. 15
+354. The Dewey Decimal Classification Scheme is used mainly by _______ libraries
+A. Small libraries +++
+B. Public and University libraries only
+C. University libraries only
+D. Very large libraries
+355. The International Standard Book Number is assigned by the
+A. National library +++
+B. School library
+C. Academic library
+D. Research and public libraries
+356. Media Resources Centres refer to modern
+A. Academic libraries
+B. Special and research libraries
+C. Public libraries
+D. School libraries +++
+357. An archive is a place housing large number of
+A. Publications
+B. Electronic information
+C. Historical records +++
+D. Records of publications
+358. The library found in the Federal University of Technology was relocated to the present site in
+A. March 2006
+B. April 2006 +++
+C. 1982
+D. 1983
+359. Some methods of acquiring information resources in the library are
+A. Purchase
+B. Bequest
+C. Library exchange
+D. All of the above+++
+360. The Dust jacked contains the
+A. Blurb +++
+B. Binding
+C. Spine
+D. Fly leaf
+361. By AD 1543 anatomical drawings were in use in the University of
+A. Sweden
+B. California
+C. Padua +++
+D. Constantinople
+362. The “Medium is the message” was declared by
+A. Marshall Mulan
+B. Marshall MuLuhan +++
+C. Marshall McMacgraw
+D. Marshall McPherson
+363. Non-print resources can be categorized into
+A. Audio and visual resources
+B. Audio, Visual, electronic resources and hard copies
+C. Audio, visual and electronic resources +++
+D. A-V and their hard copies
+364. iPod is a mobile device and portable digital player useful for assessing
+A. Video file formats
+B. Audio file formats ++++
+C. Written file formats
+D. Any file formats
+365. Podcasts as digitized files can be accessed with the
+A. Website +++
+B. Email
+C. Video format
+D. Audio format
+366. Operating systems refer to a set of programs that help to control the
+A. Applications of a computer
+B. The way computers work and run other programs +++
+C. Suitability of computers and the application programs in them
+D. Way application programs of can be downloaded.
+367. In order to connect professional and develop better relationships, the social media that can be used include
+A. Twitter
+B. Instagram
+C. Goggle+
+D. Facebook +++
+368. To share information of processional interest and career experiences, it is better to use
+A. Goggle +
+B. Twitter
+C. LinkedIn +++
+D. YouTube
+369. Some disadvantages of the use of social media are
+A. Facilitating deception
+B. Defamatory content
+C. Subjective norms
+D. All of the above +++
+370. File transfer protocol an internet standard permits on the internet the sharing of ____ with other computers
+A. Videos
+B. Files ++++
+C. Sound
+D. Textual messages
+371. One aspect of information literacy is ________
+A. Cultural literacy +++
+B. Building literacy
+C. Music literacy
+D. Trading literacy
+372. One of the following is a primary source of information
+A. Book
+B. Reviews
+C. Patents ++++
+D. Databases
+373. A library with manual and sclerotic catalogues is an example of one that uses
+A. Hybrid catalogue +++
+B. Electronic catalogues
+C. Manual catalogue
+D. MARC and OPAC
+374. Added entries can be used in locating publication by the provision of
+A. Title, subject, author, translator, compiler and publisher +++
+B. Title, subject, author, and printer
+C. Title, subject, author, compiler and press
+D. Title, subject, author, publisher, printer and press
+375. Call number is made of
+A. Location number
+B. Address number
+C. Subject number and author number +++
+D. Subject number and book number
+376. Call number is
+A. Numeric
+B. Alphanumeric +++
+C. Words only
+D. Pictorial only
+377. The unique number assigned to any book showing when it was acquired is called
+A. Accession number +++
+B. Subject number
+C. Location number
+D. International Standard Book Number
+378. Information on the publisher of a book, place and date of publication is known as
+A. Collation
+B. Author entry
+C. Series entry
+D. Imprint +++
+379. Information on a book’s length and size as well as notations about maps or illustrations is called
+A. Author’s entry
+B. Series entry
+C. Collation +++
+D. Imprint
+380. The largest and most detailed of all encyclopedias is called
+A. World Bank Encyclopedia
+B. Encyclopedia Britannica +++
+C. New Age Encyclopedia
+D. Encyclopedia of physics
+381. Date of copyright, name of copyright holder, book’s number, library of congress catalogue number, previous editions, printers name can all the found on the
+A. Copyright page +++
+B. Title page
+C. Preface
+D. Foreword
+382. Sources of information when listed and arranged in an alphabetical order can be referred to as
+A. Biography
+B. Bibliography +++
+C. Bibliology
+D. References
+383. When a source of information is all about a person’s life history authored by self it is called
+A. Biography
+B. Bibliography
+C. Autobiography +++
+D. Encyclopedia
+384. An additional explanations and elaboration not essential to a text is known as
+A. Appendix +++
+B. Glossary
+C. Index
+D. List of illustrations
+385. To have reduced photographic images of printed pages and make it possible to house much more materials, the library needs
+A. Computers
+B. Softwares
+C. Books
+D. Microforms +++
+386. In the Dewey Decimal System, 300 represents
+A. Language
+B. Social sciences +++
+C. The Arts
+D. Pure Sciences
+387. In the Library of Congress, system V stands for
+A. Natural Science +++
+B. Political science
+C. Education
+D. Law
+388. ____________ represents social sciences in the Library of Congress System
+A. A
+B. H+++
+C. S
+D. T
+389. MARC can be used only by
+A. One library
+B. Three libraries
+C. Many libraries +++
+D. City libraries
+390. To identify a serial, it must have
+A. Volume and serial numbers
+B. Volume and book numbers
+C. Volume, serial and book numbers
+D. Volume and issue numbers +++
+391. Any library can be categorized using
+A. Ownership
+B. Users served
+C. Type of collection
+D. All of the above +++
+392. Another name given to yearbook is
+A. Annual +++
+B. Gazetters
+C. Handbooks
+D. Books of the year
+393. The Federal University of Technology Akure has its library called as
+A. Special Library
+B. Academic Library +++
+C. School Library
+D. Research Library
+    </script>
+
+    <script>
+        // Global Variables
+        let allQuestions = [];
+        let currentTestQuestions = [];
+        let timerInterval;
+        let timeRemaining = 600; // 10 minutes in seconds
+        let testSubmitted = false;
+
+        // --- PARSER LOGIC ---
+        function parseQuestions() {
+            const rawText = document.getElementById('raw-questions').textContent;
+            const lines = rawText.split('\n');
+            let questions = [];
+            let currentQ = null;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line) continue;
+                if (line.includes('GNS 103:') || line.includes('TIME:')) continue;
+
+                // Match New Question (e.g. "1. Question text" or "211 The acronym")
+                let qMatch = line.match(/^(\d+)\.?\s+(.*)/);
+                if (qMatch) {
+                    if (currentQ && currentQ.options.length > 0) questions.push(currentQ);
+                    
+                    let qText = qMatch[2];
+                    // Clean up weird formatting like "1. 1A newspaper"
+                    qText = qText.replace(/^\d+[A-Z]/, (match) => match.charAt(match.length-1));
+
+                    currentQ = { question: qText, options: [], correctIndex: -1 };
+                    continue;
+                }
+
+                // Match Option (e.g. "(a) option", "A. option", "a. option")
+                let optMatch = line.match(/^[\(]?\s*[a-eA-E]\s*[\.\)]\s*(.*)/);
+                if (optMatch && currentQ) {
+                    let optText = optMatch[1];
+                    let isCorrect = optText.includes('+++') || line.includes('+++');
+                    optText = optText.replace(/\+\+\+$/, '').trim();
+
+                    currentQ.options.push(optText);
+                    if (isCorrect) currentQ.correctIndex = currentQ.options.length - 1;
+                    continue;
+                }
+
+                // Append multi-line strings
+                if (currentQ) {
+                    if (currentQ.options.length === 0) {
+                        currentQ.question += " " + line;
+                    } else {
+                        let isCorrect = line.includes('+++');
+                        let extraText = line.replace(/\+\+\+$/, '').trim();
+                        currentQ.options[currentQ.options.length - 1] += " " + extraText;
+                        if(isCorrect) currentQ.correctIndex = currentQ.options.length - 1;
+                    }
+                }
+            }
+            if (currentQ && currentQ.options.length > 0) questions.push(currentQ);
+            return questions;
+        }
+
+        // --- SHUFFLE LOGIC ---
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // --- UI LOGIC ---
+        function startTest() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            
+            // Parse (if not already parsed) and Shuffle
+            if(allQuestions.length === 0) {
+                allQuestions = parseQuestions();
+            }
+            
+            let shuffled = shuffleArray([...allQuestions]);
+            currentTestQuestions = shuffled.slice(0, 60); // Select 60 questions
+
+            renderQuestions(currentTestQuestions);
+            
+            // Reset and start Timer
+            testSubmitted = false;
+            timeRemaining = 600;
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(timerTick, 1000);
+            window.scrollTo(0, 0);
+        }
+
+        function renderQuestions(questions) {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                let letters = ['A', 'B', 'C', 'D', 'E'];
+                
+                let optionsHTML = q.options.map((opt, optIndex) => `
+                    <label class="option-label" id="label-q${index}-o${optIndex}">
+                        <input type="radio" name="q${index}" value="${optIndex}" onchange="selectOption(this)">
+                        <span><strong>${letters[optIndex]}.</strong> ${opt}</span>
+                    </label>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="question-card" id="qcard-${index}">
+                        <span class="question-number">Question ${index + 1} of 60</span>
+                        <div class="question-text">${q.question}</div>
+                        <div class="options-container">
+                            ${optionsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('submit-btn').style.display = 'block';
+        }
+
+        function selectOption(radio) {
+            if(testSubmitted) return;
+            // Remove 'selected' class from all siblings
+            let siblings = document.getElementsByName(radio.name);
+            siblings.forEach(sib => {
+                sib.parentElement.classList.remove('selected');
+            });
+            // Add 'selected' to checked one
+            radio.parentElement.classList.add('selected');
+        }
+
+        function timerTick() {
+            timeRemaining--;
+            updateTimerDisplay();
+            
+            if(timeRemaining <= 60) {
+                document.getElementById('timer').classList.add('time-warning');
+            }
+            
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                alert("Time is up! Submitting automatically.");
+                submitTest();
+            }
+        }
+
+        function updateTimerDisplay() {
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function submitTest() {
+            if(testSubmitted) return;
+            testSubmitted = true;
+            clearInterval(timerInterval);
+            document.getElementById('timer').classList.remove('time-warning');
+
+            let score = 0;
+            
+            // Evaluate answers
+            currentTestQuestions.forEach((q, index) => {
+                let selected = document.querySelector(`input[name="q${index}"]:checked`);
+                let selectedVal = selected ? parseInt(selected.value) : -1;
+                
+                if (selectedVal === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            // Show Results
+            document.getElementById('test-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            
+            let percentage = ((score / 60) * 100).toFixed(1);
+            document.getElementById('score-display').innerText = `${score} / 60`;
+            
+            let msg = percentage >= 70 ? `Excellent job! You scored ${percentage}%` 
+                    : percentage >= 50 ? `Good effort! You scored ${percentage}%`
+                    : `Keep practicing! You scored ${percentage}%`;
+            document.getElementById('score-message').innerText = msg;
+            window.scrollTo(0, 0);
+        }
+
+        function viewCorrections() {
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('test-screen').style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'none'; // Hide submit button
+            
+            // Show correct/wrong answers
+            currentTestQuestions.forEach((q, index) => {
+                let selected = document.querySelector(`input[name="q${index}"]:checked`);
+                let selectedVal = selected ? parseInt(selected.value) : -1;
+                
+                // Disable all radios
+                let radios = document.getElementsByName(`q${index}`);
+                radios.forEach(r => r.disabled = true);
+                
+                // Highlight correct and wrong answers
+                if (selectedVal !== -1 && selectedVal !== q.correctIndex) {
+                    document.getElementById(`label-q${index}-o${selectedVal}`).classList.add('wrong');
+                }
+                
+                if (q.correctIndex !== -1) {
+                    document.getElementById(`label-q${index}-o${q.correctIndex}`).classList.add('correct');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function restartTest() {
+            startTest();
+        }
+
+        // Initialize parser silently in background on load
+        window.onload = () => {
+            document.getElementById('loader').style.display = 'block';
+            setTimeout(() => {
+                allQuestions = parseQuestions();
+                document.getElementById('loader').style.display = 'none';
+            }, 100);
+        };
+    </script>
+</body>
+</html>
