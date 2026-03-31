@@ -185,6 +185,8 @@
             transition: background 0.3s;
             font-weight: bold;
             box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn:hover {
@@ -212,7 +214,15 @@
             color: var(--primary-color);
         }
         
-        /* Responsive adjustments */
+        /* Action buttons layout */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
         @media (max-width: 600px) {
             .top-bar { flex-direction: column; gap: 10px; text-align: center; }
             .question-card { padding: 15px; }
@@ -232,6 +242,8 @@
                 <p><strong>🔁 Attempts:</strong> Unlimited</p>
             </div>
             <button class="btn" onclick="startTest()">Start CBT Now</button>
+            <br><br>
+            <a href="https://geniuspointacademy.github.io" target="_blank" class="btn" style="background:#17a2b8; font-size: 0.9rem;">Join GPA Community</a>
             <div id="loader">Processing Question Bank...</div>
         </div>
 
@@ -241,8 +253,14 @@
                 <div id="timer">10:00</div>
             </div>
             <div id="questions-container">
-                </div>
+                <!-- Questions injected here -->
+            </div>
             <button class="btn btn-submit" id="submit-btn" onclick="submitTest()">Submit Test</button>
+            
+            <div id="review-actions" class="action-buttons" style="display:none;">
+                <button class="btn" onclick="restartTest()">Retake Test</button>
+                <a href="https://geniuspointacademy.github.io" target="_blank" class="btn" style="background:#17a2b8;">Join GPA Community</a>
+            </div>
         </div>
 
         <div id="result-screen" style="display:none;">
@@ -250,17 +268,21 @@
             <h2 id="score-display" style="font-size: 3.5rem; margin: 20px 0; color: var(--primary-color);"></h2>
             <p id="score-message" class="subtitle" style="margin-bottom: 40px;"></p>
             
-            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <div class="action-buttons">
                 <button class="btn" onclick="restartTest()">Retake Test</button>
                 <button class="btn" style="background:#6c757d;" onclick="viewCorrections()">Review Answers</button>
+            </div>
+            <div class="action-buttons">
+                <a href="https://geniuspointacademy.github.io" target="_blank" class="btn" style="background:#17a2b8;">Join GPA Community</a>
             </div>
         </div>
     </div>
 
+    <!-- CLEANED QUESTION BANK -->
     <script type="text/template" id="raw-questions">
 GNS 103: 2016/2017 FIRST SEMESTER EXAMINATION
 TIME: 30 MINUTES
-1. 1A newspaper is a publication that is issued
+1. A newspaper is a publication that is issued
 (a) Daily or Weekly+++
 (b) Monthly
 (c) Annually
@@ -305,7 +327,7 @@ TIME: 30 MINUTES
 (b) A book containing lists of names of residents, businesses organizations etc.
 (c) A book of language which provides information regarding the meaning, origin, spellings etc
 (d) Material that gives general background information on a topic.
-10. 2The following are advantages of using Non-print resources except:
+10. The following are advantages of using Non-print resources except:
 (a) Aid retention
 (b) preservation
 (c) Group instruction
@@ -325,7 +347,7 @@ TIME: 30 MINUTES
 (b) The edge of the book that holds the printed sheets together
 (c) What contains the intellectual information
 (d) A blank leaf found at the beginning and end of a book.
-14. 3Books as the oldest forms of printed media include the following sub types except:
+14. Books as the oldest forms of printed media include the following sub types except:
 (a) Monographs
 (b) Textbooks
 (c) Reference books
@@ -345,7 +367,7 @@ TIME: 30 MINUTES
 (b) 1993
 (c) 1981
 (d) 2003.
-18. 4National Libraries are also known as:
+18. National Libraries are also known as:
 (a) Virtual libraries
 (b) Special libraries
 (c) Depository+++
@@ -360,7 +382,7 @@ TIME: 30 MINUTES
 (b) Library
 (c) Literature
 (d) All of the above
-21. 5All these are functions of library except
+21. All these are functions of library except
 (a) Provision of seating and reading facilities
 (b) Provision of reference services
 (c) Keeping of academic records of students+++
@@ -375,7 +397,7 @@ a. Types of services rendered to users
 b. Types of collections in the library
 c. Types of users
 d. Gender of the user+++
-24. 6FUTA library is an example of............
+24. FUTA library is an example of............
 (a) School library
 (b) Public library
 (c) Special library
@@ -390,7 +412,7 @@ d. Gender of the user+++
 (b) International Standard Beaucratic Number
 (c) International Standard Backlog Number
 (d) International Standard Backcode Number
-27. 7Transparency is an example of ........... form of recording knowledge
+27. Transparency is an example of ........... form of recording knowledge
 (a) Print
 (b) Non-print+++
 (c) Both a and b
@@ -405,7 +427,7 @@ d. Gender of the user+++
 (b) Archive+++
 (c) National library
 (d) School library
-30. 8Which unit in the library is responsible for the processing of books?
+30. Which unit in the library is responsible for the processing of books?
 (a) Serial unit are issued
 (b) Circulation unit
 (c) Reference unit
@@ -415,7 +437,7 @@ d. Gender of the user+++
 (b) Cloak room+++
 (c) Security room
 (d) Circulation desk
-32. 9Works on a single subject or aspect of a subject are called ...........
+32. Works on a single subject or aspect of a subject are called ...........
 (a) Monographs+++
 (b) Textbooks
 (c) Reference books
@@ -430,7 +452,7 @@ d. Gender of the user+++
 (b) Background reference sources
 (c) Biographical reference sources+++
 (d) Literature search tools
-35. 10The index consulted by library staff to locate serial materials is..............
+35. The index consulted by library staff to locate serial materials is..............
 (a) Kardex+++
 (b) Catalogue
 (c) Library card
@@ -510,7 +532,7 @@ d. Gender of the user+++
 (b) Thesaurus+++
 (c) Dictionary
 (d) Special purpose dictionary
-51.11 ................ is not a type of library
+51. ................ is not a type of library
 (a) Digital library
 (b) Electronic library
 (c) Virtual library
@@ -520,7 +542,7 @@ d. Gender of the user+++
 (b) Special+++
 (c) Private
 (d) Digital
-53. 12............... is not one of the functions of the circulation unit in the library
+53. ............... is not one of the functions of the circulation unit in the library
 (a) responding to users’ questions
 (b) Charging and discharging of library materials
 (c) Registration of users
@@ -540,12 +562,12 @@ d. Gender of the user+++
 (b) accessioning+++
 (c) Inter-library loan
 (d) Library exchange
-57.13 ............. contains bibliographic details of a book including its copyright information
+57. ............. contains bibliographic details of a book including its copyright information
 (a) Title page
 (b) Preface
 (c) Verso page+++
 (d) Half title page
-58.14 ............ is an example of a cartographic material.
+58. ............ is an example of a cartographic material.
 (a) Encyclopedia
 (b) Slide
 (c) Realia
@@ -555,7 +577,7 @@ d. Gender of the user+++
 (b) They are not profitable for individualised learning+++
 (c) They are better accessed using electric power
 (d) They have large storage capacities
-60.15 ........... is an example of fact/ready reference resource
+60. ........... is an example of fact/ready reference resource
 (a) Directories+++
 (b) Abstract
 (c) Bibliography
@@ -570,12 +592,12 @@ d. Gender of the user+++
 (b) A magazine
 (c) A periodical
 (d) All of the above+++
-63.16 ............. is not a characteristics of serial
+63. ............. is not a characteristics of serial
 (a) It is dynamic
 (b) It contains International Standard Book Number +++
 (c) It dwells on specialized subjects
 (d) It is written by experts.
-64. 17............. is an annual information material containing mostly statistical information on various topics
+64. ............. is an annual information material containing mostly statistical information on various topics
 (a) Encyclopedia
 (b) Directory
 (c) Yearbook+++
@@ -600,7 +622,7 @@ d. Gender of the user+++
 (b) Alphabetical index
 (c) Author index
 (d) Numerical index+++
-69.18 Information materials on technology are classified under ...............
+69. Information materials on technology are classified under ...............
 (a) S
 (b) T+++
 (c) Q
@@ -610,7 +632,7 @@ d. Gender of the user+++
 (b) National library+++
 (c) Government library
 (d) Legislative library
-71. 19A paper designed to cover a published book is called .............
+71. A paper designed to cover a published book is called .............
 (a) Dust jacket+++
 (b) Paper cover
 (c) Fly leaf
@@ -625,7 +647,7 @@ d. Gender of the user+++
 (b) Virtual library
 (c) Special library+++
 (d) Academic library
-74.20 One of the following is not a service performed in academic libraries
+74. One of the following is not a service performed in academic libraries
 (a) User education
 (b) Reprographic service
 (c) Bindery service
@@ -635,7 +657,7 @@ d. Gender of the user+++
 (b) Compact disk
 (c) Memory card+++
 (d) None of the above
-76.21 ISSN refers to .........
+76. ISSN refers to .........
 (a) International Standard Serial Number
 (b) International Standard Subject Number+++
 (c) International Subject Serial Number
@@ -645,7 +667,7 @@ d. Gender of the user+++
 (b) Fact/ready reference source
 (c) Biographical reference source+++
 (d) Geographical reference source
-78.22 .............. is a routine task performed in the acquisitions unit
+78. .............. is a routine task performed in the acquisitions unit
 (a) Accessioning+++
 (b) Labelling
 (c) Cataloguing
@@ -655,7 +677,7 @@ d. Gender of the user+++
 (b) Private library+++
 (c) Special library
 (d) Virtual library
-80.23 Providing information on where to get specific information materials is part of the function of ............unit
+80. Providing information on where to get specific information materials is part of the function of ............unit
 (a) Reference+++
 (b) Circulation
 (c) Current awareness
@@ -665,7 +687,7 @@ d. Gender of the user+++
 (b) Authorship verification
 (c) A and B
 (d) None of the above+++
-82.24 Another name for information literacy is ...............
+82. Another name for information literacy is ...............
 (a) Library literacy
 (b) Media literacy
 (c) Computer literacy
@@ -675,7 +697,7 @@ d. Gender of the user+++
 (b) Text
 (c)Binding
 (d) Dust jacket
-84.25 ............. is a physical part of a book
+84. ............. is a physical part of a book
 (a) Table of contents
 (b) Half title page
 (c) Verso page
@@ -685,12 +707,12 @@ d. Gender of the user+++
 (b) Specimen
 (c) Cartographic objects
 (d) Microforms
-86.26 All but one of the following is an example of a graphic material.
+86. All but one of the following is an example of a graphic material.
 (a) Motion picture
 (b) Slide
 (c) Still picture
 (d) Chart+++
-87.27 An information resource containing list of names of residents or organisations in a place is known as ...............
+87. An information resource containing list of names of residents or organisations in a place is known as ...............
 (a) Book list
 (b) index
 (c) Directory+++
@@ -700,7 +722,7 @@ d. Gender of the user+++
 (b) Newsletter
 (c) Magazine
 (d) All of the above+++
-89.29 A book is an information material containing ........ pages
+89. A book is an information material containing ........ pages
 (a) Less than 48 pages
 (b) 49 pages and above+++
 (c) 50 pages and above
@@ -710,7 +732,7 @@ d. Gender of the user+++
 (b) Realia
 (c) Slides
 (d) Television+++
-91.30 The following are aspects of information literacy except
+91. The following are aspects of information literacy except
 (a) Media literacy
 (b) Computer literacy
 (c) Numerical literacy
@@ -755,7 +777,7 @@ d. Gender of the user+++
 (b) International School of Science Number
 (c) International Standard Serial Number+++
 (d) International School of Science Number
-100. 31The __________ is actively involved in inter-library lending schemes in a country
+100. The __________ is actively involved in inter-library lending schemes in a country
 (a) State governments
 (b) Library of congress
 (c) National Library+++
@@ -765,7 +787,7 @@ d. Gender of the user+++
 (b) Circulation unit
 (c) Reference unit
 (d) Porters/Security Unit
-102.32 __________________ is the unit where users are registered
+102. __________________ is the unit where users are registered
 (a) Circulation unit+++
 (b) Porters’ unit
 (c) Security unit
@@ -775,12 +797,12 @@ d. Gender of the user+++
 (b) Serial unit
 (c) Cataloguing and classification unit
 (d) Porters’ unit+++
-104.33 ____________ is the major method of acquiring resources in the Library.
+104. ____________ is the major method of acquiring resources in the Library.
 (a) Gift/donations
 (b) Inter-library loan
 (c) Purchase
 (d) All of the above+++
-105.34 Library resources in print format are those information carries that exist on paper
+105. Library resources in print format are those information carries that exist on paper
 (a) Yes+++
 (b) No
 (c) Yes or no
@@ -791,7 +813,7 @@ d. Gender of the user+++
 (c) Library exchange/ exchanges+++
 (d) Borrowing/Exchange
 (e) None of the above
-107.35 ________________unit mainly stock postgraduate dissertations and the undergraduate projects
+107. ________________unit mainly stock postgraduate dissertations and the undergraduate projects
 (a) Publications and Repository Unit +++
 (b) Collection Development unit.
 (c) Acquisition Unit
@@ -803,12 +825,12 @@ d. Gender of the user+++
 (c) Binding
 (d) The spine
 (e) None of the above
-109.36 ___________ is the edge of the book that holds the printed papers
+109. ___________ is the edge of the book that holds the printed papers
 (a) The spine +++
 (b) Content
 (c) Text
 (d) Intellectual information
-110.37 The preliminary pages of the book consist of the following features except
+110. The preliminary pages of the book consist of the following features except
 (a) Fly leaf
 (b) Half title page
 (c) Title page
@@ -818,7 +840,7 @@ d. Gender of the user+++
 (b) Cartographic materials or maps
 (c) Objects
 (d) All of the above+++
-112.38 These information resources combine the qualities of sight and sound appear in one media
+112. These information resources combine the qualities of sight and sound appear in one media
 (a) Television+++
 (b) Graphics
 (c) Books and Radio
@@ -828,12 +850,12 @@ d. Gender of the user+++
 (b) No
 (c) Yes and No
 (d) Yes or No
-114.39 The reference unit is a place in the library where the following materials except one are organised for consultation.
+114. The reference unit is a place in the library where the following materials except one are organised for consultation.
 (a) Dictionary
 (b) Annuals
 (c) Journals+++
 (d) Encyclopedia
-115. 40_____________ treat specific subjects like agriculture, medicine etc
+115. _____________ treat specific subjects like agriculture, medicine etc
 (a) General Encyclopedia
 (b) Subject encyclopedia+++
 (c) Encyclopedia Americana
@@ -843,17 +865,17 @@ d. Gender of the user+++
 (b) Dictionaries
 (c) Directories
 (d) None of the above +++
-117. 41These sources provide basic data and statistics on topics such as education, health, sports, personalities or professions and are usually published annually.
+117. These sources provide basic data and statistics on topics such as education, health, sports, personalities or professions and are usually published annually.
 (a) Almanacs and yearbooks+++
 (b) Handbooks, manuals and guides
 (c) Literature search reference sources
 (d) Abstracts
-118. 42_______________ is a list of the books of a specific author, publisher or on a specific subject.
+118. _______________ is a list of the books of a specific author, publisher or on a specific subject.
 (a) Periodical index
 (b) Bibliography+++.
 (c) Citation index
 (d) Book index
-119. 43Geographical sources are also known as cartographic sources.
+119. Geographical sources are also known as cartographic sources.
 (a) Yes+++
 (b) No
 (c) Yes or No
@@ -864,7 +886,7 @@ d. Gender of the user+++
 (c) Books
 (d) Methods of acquiring series
 (e) Purchase
-121. 44Which of the following departments has among its responsibilities the selection and accessioning of information resources bought by or donated to the library.
+121. Which of the following departments has among its responsibilities the selection and accessioning of information resources bought by or donated to the library.
 a) Circulation Unit
 b) Acquisition Unit+++
 c) Reference Unit
@@ -874,7 +896,7 @@ a) Reference materials
 b) Serials+++
 c) Journals
 d) Documents
-123. 45Which of these resources is the odd one out
+123. Which of these resources is the odd one out
 a) Journals
 b) Newsletters
 c) Newspapers
@@ -884,7 +906,7 @@ a) Newspaper+++
 b) Encyclopaedia
 c) Dictionary
 d) Memo
-125. 46Cards in a catalogue cabinet are arranged
+125. Cards in a catalogue cabinet are arranged
 a) Chronologically
 b) Serially
 c) Alphabetically+++
@@ -899,7 +921,7 @@ a) Textbooks
 b) Serials+++
 c) Journals
 d) Newsletters
-128. 47Undergraduate students are entitled to borrow maximum of _______ while postgraduate students are entitled to _________ number of books.
+128. Undergraduate students are entitled to borrow maximum of _______ while postgraduate students are entitled to _________ number of books.
 a) 2 books and 4 books respectively+++
 b) 3 books and 6 books respectively
 c) 2 books and as many books as possible respectively
@@ -909,7 +931,7 @@ a) Dictionaries
 b) Biographies
 c) Serials+++
 d) Yearbook
-130. 48One of the following is a reason why books may be found in the reserved collection
+130. One of the following is a reason why books may be found in the reserved collection
 a) Books are reference materials
 b) Books are a gift to the library
 c) Books are recommended by teaching staff+++
@@ -934,7 +956,7 @@ a) Archives
 b) State library
 c) National library
 d) Public Library+++
-135. 49The type of library that serves undergraduates and graduate students, researchers and faculty is called _____
+135. The type of library that serves undergraduates and graduate students, researchers and faculty is called _____
 a) Document center
 b) Academic library+++
 c) National library
@@ -959,7 +981,7 @@ a) Subject encyclopaedia
 b) Special encyclopaedia
 c) Juvenile encyclopaedia
 d) General encyclopaedia+++
-140. 50Which of these options is odd:
+140. Which of these options is odd:
 a) Atlas
 b) Map
 c) Gazetteer
@@ -1314,166 +1336,166 @@ a. To allow researcher to make use of part of work for academic purpose only+++
 b. Allow researchers to copy the whole work for academic purposes only
 c. a and b
 d. To allow the work be used for any purpose without authorization.
-211 The acronym OPAC means ………………..
+211. The acronym OPAC means ………………..
 (a) Online Public Awareness Card
 (b) Online Public Awareness Catalogue
 (c) Online Private Access Catalogue
 (d) Online Public Access Catalogue+++
-212 The university library of FUTA has been renamed to
+212. The university library of FUTA has been renamed to
 A Francis Idibiye Library+++
 B Albert Ilemobade Library
 C Peter Kolawole Library
-213 The female cloakroom of the university library when entry is at
+213. The female cloakroom of the university library when entry is at
 A Left hand side+++
 B Right hand side
 c At the Centre
 d Back of the porter’s lodge
-214 all these are allowed in the library except
+214. all these are allowed in the library except
 A Borrowing of books
 B Access to internet services
 C Renewal of lost card
 D Group discussion among readers+++
-215 All these are forms of damage to library books except
+215. All these are forms of damage to library books except
 A Mutilation
 B Binding of library books+++
 C tearing of library books
 D defacing of library books
-216 All these are characteristics of serials except
+216. All these are characteristics of serials except
 A They have ISSN
 B They are often acquired through subscription
 C The content in each volume differs from another
 D They are not published successfully+++
-217 Advantages of using electronic serials include these except
+217. Advantages of using electronic serials include these except
 A E-serials are easy to read and revise
 B They can be easily manipulated
 C they cannot be access within library+++
 D they can be accessed by many users at the same time
-218 The type of library catalogue is
+218. The type of library catalogue is
 A Title catalogue
 B Author catalogue
 C Subject catalogue
 D Divided catalogue+++
-219 The classification scheme used in FUTA library is
+219. The classification scheme used in FUTA library is
 A Universal decimal scheme
 B Dewey decimal scheme
 C Library of congress scheme+++
 D international library scheme
-220 The acronym “http” means
+220. The acronym “http” means
 A Hypertext transfer protocol+++
 B Hypertext transmission protocol
 C Hypertext tutor protocol
 D Hypertext transfer procedure
-221 All these are search engines except
+221. All these are search engines except
 A Hyper+++
 B Hotbot
 C Google
 D Excite
-222 All these are browsers except
+222. All these are browsers except
 A Mozilla
 B Fire fox
 C Opera mini
 D Exposure+++
-223 The acquisition of knowledge and skill using electronic technologies with internet- based course ware and wide range networks is called
+223. The acquisition of knowledge and skill using electronic technologies with internet- based course ware and wide range networks is called
 A E-Learning +++
 B Group learning
 C distance learning
 D Project learning
-224 In library of congress classification scheme ‘R’ represents
+224. In library of congress classification scheme ‘R’ represents
 A Religion
 B Medicine+++
 C Social Science
 D Fine arts
-225 A number 86-013575 on a catalogue card represents
+225. A number 86-013575 on a catalogue card represents
 A Call mark
 B No tuition number
 C Accession number+++
 D Author’s number
-226 The library type that has collection for all categories of users is
+226. The library type that has collection for all categories of users is
 A private library
 B Public library+++
 C School library
 D Academic library
-227 A library without wall is called
+227. A library without wall is called
 A Virtual library+++
 B School library
 C Public library
 D Private library
-228 Factors to be considered when evaluating internet materials include these except
+228. Factors to be considered when evaluating internet materials include these except
 A Credibility
 B Objectivity
 C Price+++
 D Support
-229 “WWW” represents in ICT word
+229. “WWW” represents in ICT word
 A Wide world web
 B Web world wide
 C World web wide
 D World wide web+++
-230 The supplementary information that may be useful to a reader is
+230. The supplementary information that may be useful to a reader is
 A Appendices+++
 B Conclusion
 C Table of contents
 D Title page
-231 A reader can use the university library only if he/she has
+231. A reader can use the university library only if he/she has
 A Formally registered in the library+++
 B Formally given admission by the university
 C Formally matriculated in the university
 D Formally introduced as a FUTA student
-232 A good report should have one of the following
+232. A good report should have one of the following
 A References+++
 B Referees
 C Dust jacket
 D Monograph
-233 When citing for scholarly publications one of the following is not required
+233. When citing for scholarly publications one of the following is not required
 A Place of publication
 B Bibliography+++
 C Publisher’s name
 D Author’s name
-234 is a type of geographical reference source
+234. is a type of geographical reference source
 A Gazetteer+++
 B Manual
 C Index
 D Gazette
-235 is not a type of library catalogue
+235. is not a type of library catalogue
 A card catalogue+++
 B Classified catalogue
 C Divided catalogue
 D Union catalogue
-236 is an example of an internet service
+236. is an example of an internet service
 A E-mail
 B Mailing list
 C File transfer protocol
 D All of the above
-237 One of the following is a service performed in the library
+237. One of the following is a service performed in the library
 A Current awareness service
 B Bibliography service
 C Document delivery
 D None of the above+++
-238 Internet telephony allows voice calls using
+238. Internet telephony allows voice calls using
 A Laptop
 B Infinix phone
 C Desktop computer
 D All of the above+++
-239 Web log is another name for
+239. Web log is another name for
 A Newsgroup
 B E-mail
 C Internet protocol
 D Blog+++
-240 One of the following is not a function of a library catalogue
+240. One of the following is not a function of a library catalogue
 A It identifies the work of editors only+++
 B It gives index to the library collection
 C It shows the library’s holding
 D It describes the materials in the library
-241 is a collection of maps
+241. is a collection of maps
 A Gazetteer
 B Atlas+++
 C Gazette
 D none of the above
-242 All of the following are types of audio- visual materials EXCEPT-----------------
+242. All of the following are types of audio- visual materials EXCEPT-----------------
 (a) Realia
 (b) microFilm
 (c) Slide
 (d) Furniture +++
-243 --------------------------is one of the greatest offence in the library
+243. --------------------------is one of the greatest offence in the library
 (a) Reading
 (b) Eating +++
 (c) Writing
@@ -2761,7 +2783,7 @@ d) Union catalogue
 (a) Half title page
 (b) Title page+++
 (c) Copyright page
-(d) Dedication page     
+(d) Dedication page
     </script>
 
     <script>
@@ -2776,7 +2798,7 @@ d) Union catalogue
         function parseQuestions() {
             const rawText = document.getElementById('raw-questions').textContent;
             const lines = rawText.split('\n');
-            let questions = [];
+            let parsedQuestions = [];
             let currentQ = null;
 
             for (let i = 0; i < lines.length; i++) {
@@ -2787,18 +2809,21 @@ d) Union catalogue
                 // Match New Question (e.g. "1. Question text" or "211 The acronym")
                 let qMatch = line.match(/^(\d+)\.?\s+(.*)/);
                 if (qMatch) {
-                    if (currentQ && currentQ.options.length > 0) questions.push(currentQ);
+                    if (currentQ && currentQ.options.length > 0) parsedQuestions.push(currentQ);
                     
                     let qText = qMatch[2];
-                    // Clean up weird formatting like "1. 1A newspaper"
-                    qText = qText.replace(/^\d+[A-Z]/, (match) => match.charAt(match.length-1));
+                    
+                    // Further clean any stray numbers that might have sneaked into the start of the text
+                    qText = qText.replace(/^\d+/, '').trim();
+                    // Clean up weird formatting like "1A newspaper" -> "A newspaper"
+                    qText = qText.replace(/^[A-Z](?=[a-z])/g, (match) => match.charAt(match.length-1));
 
                     currentQ = { question: qText, options: [], correctIndex: -1 };
                     continue;
                 }
 
-                // Match Option (e.g. "(a) option", "A. option", "a. option")
-                let optMatch = line.match(/^[\(]?\s*[a-eA-E]\s*[\.\)]\s*(.*)/);
+                // Match Option (e.g. "(a) option", "A. option", "a. option", "A option")
+                let optMatch = line.match(/^[\(]?\s*[a-fA-F]\s*(?:[\.\)]\s*|\s+)(.*)/);
                 if (optMatch && currentQ) {
                     let optText = optMatch[1];
                     let isCorrect = optText.includes('+++') || line.includes('+++');
@@ -2821,8 +2846,22 @@ d) Union catalogue
                     }
                 }
             }
-            if (currentQ && currentQ.options.length > 0) questions.push(currentQ);
-            return questions;
+            if (currentQ && currentQ.options.length > 0) parsedQuestions.push(currentQ);
+            
+            // --- FILTER DUPLICATES ---
+            let uniqueQuestions = [];
+            let seenText = new Set();
+            
+            for (let q of parsedQuestions) {
+                // Normalize text to check for duplicates (lowercase, no spaces, no special chars)
+                let normalized = q.question.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!seenText.has(normalized)) {
+                    seenText.add(normalized);
+                    uniqueQuestions.push(q);
+                }
+            }
+            
+            return uniqueQuestions;
         }
 
         // --- SHUFFLE LOGIC ---
@@ -2842,6 +2881,8 @@ d) Union catalogue
         function startTest() {
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('review-actions').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'block';
             document.getElementById('test-screen').style.display = 'block';
             
             // Parse (if not already parsed) and Shuffle
@@ -2850,13 +2891,15 @@ d) Union catalogue
             }
             
             let shuffled = shuffleArray([...allQuestions]);
-            currentTestQuestions = shuffled.slice(0, 60); // Select 60 questions
+            // Make sure we have 60 questions even after deduplication
+            let count = Math.min(60, shuffled.length);
+            currentTestQuestions = shuffled.slice(0, count);
 
             renderQuestions(currentTestQuestions);
             
             // Reset and start Timer
             testSubmitted = false;
-            timeRemaining = 600;
+            timeRemaining = 600; // 10 minutes
             updateTimerDisplay();
             clearInterval(timerInterval);
             timerInterval = setInterval(timerTick, 1000);
@@ -2868,18 +2911,17 @@ d) Union catalogue
             container.innerHTML = '';
 
             questions.forEach((q, index) => {
-                let letters = ['A', 'B', 'C', 'D', 'E'];
                 
                 let optionsHTML = q.options.map((opt, optIndex) => `
                     <label class="option-label" id="label-q${index}-o${optIndex}">
                         <input type="radio" name="q${index}" value="${optIndex}" onchange="selectOption(this)">
-                        <span><strong>${letters[optIndex]}.</strong> ${opt}</span>
+                        <span><strong>${String.fromCharCode(65 + optIndex)}.</strong> ${opt}</span>
                     </label>
                 `).join('');
 
                 container.innerHTML += `
                     <div class="question-card" id="qcard-${index}">
-                        <span class="question-number">Question ${index + 1} of 60</span>
+                        <span class="question-number">Question ${index + 1} of ${questions.length}</span>
                         <div class="question-text">${q.question}</div>
                         <div class="options-container">
                             ${optionsHTML}
@@ -2887,7 +2929,6 @@ d) Union catalogue
                     </div>
                 `;
             });
-            document.getElementById('submit-btn').style.display = 'block';
         }
 
         function selectOption(radio) {
@@ -2944,8 +2985,9 @@ d) Union catalogue
             document.getElementById('test-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'block';
             
-            let percentage = ((score / 60) * 100).toFixed(1);
-            document.getElementById('score-display').innerText = `${score} / 60`;
+            let totalQ = currentTestQuestions.length;
+            let percentage = ((score / totalQ) * 100).toFixed(1);
+            document.getElementById('score-display').innerText = `${score} / ${totalQ}`;
             
             let msg = percentage >= 70 ? `Excellent job! You scored ${percentage}%` 
                     : percentage >= 50 ? `Good effort! You scored ${percentage}%`
@@ -2958,6 +3000,7 @@ d) Union catalogue
             document.getElementById('result-screen').style.display = 'none';
             document.getElementById('test-screen').style.display = 'block';
             document.getElementById('submit-btn').style.display = 'none'; // Hide submit button
+            document.getElementById('review-actions').style.display = 'flex'; // Show review action buttons
             
             // Show correct/wrong answers
             currentTestQuestions.forEach((q, index) => {
@@ -2968,13 +3011,15 @@ d) Union catalogue
                 let radios = document.getElementsByName(`q${index}`);
                 radios.forEach(r => r.disabled = true);
                 
-                // Highlight correct and wrong answers
+                // Highlight correct and wrong answers (With safety DOM checks to prevent crashes)
                 if (selectedVal !== -1 && selectedVal !== q.correctIndex) {
-                    document.getElementById(`label-q${index}-o${selectedVal}`).classList.add('wrong');
+                    let label = document.getElementById(`label-q${index}-o${selectedVal}`);
+                    if(label) label.classList.add('wrong');
                 }
                 
                 if (q.correctIndex !== -1) {
-                    document.getElementById(`label-q${index}-o${q.correctIndex}`).classList.add('correct');
+                    let label = document.getElementById(`label-q${index}-o${q.correctIndex}`);
+                    if(label) label.classList.add('correct');
                 }
             });
             window.scrollTo(0, 0);
@@ -2990,6 +3035,7 @@ d) Union catalogue
             setTimeout(() => {
                 allQuestions = parseQuestions();
                 document.getElementById('loader').style.display = 'none';
+                console.log(`Successfully parsed and deduplicated. Ready with ${allQuestions.length} unique questions.`);
             }, 100);
         };
     </script>
